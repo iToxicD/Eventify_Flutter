@@ -57,6 +57,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 padding: const EdgeInsets.all(30.0),
                 child: TextFormField(
                   decoration: InputDecoration(
+                      icon: const Icon(Icons.email_outlined),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide:
