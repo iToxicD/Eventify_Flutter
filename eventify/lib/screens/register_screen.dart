@@ -8,12 +8,9 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  String name = '';
   String email = '';
   String password = '';
-
-  final TextEditingController _nameField = TextEditingController();
-  final TextEditingController _emailField = TextEditingController();
-  final TextEditingController _passwordField = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +57,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     labelText: 'Contraseña',
                     labelStyle: TextStyle(color: Colors.white, fontSize: 20),
                     suffixIconColor: Colors.white),
+              ),
+              SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () {
+                  // Acción
+                },
+                child: const Text(
+                  'Registrarse',
+                  style: TextStyle(fontSize: 20),
+                ),
               ),
             ],
           ),
