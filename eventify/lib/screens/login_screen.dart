@@ -1,3 +1,4 @@
+import 'package:eventify/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -72,10 +73,26 @@ class LoginScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 25, color: Colors.black),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             const Text(
-              '¿No tienes cuenta?\n Registrate',
+              '¿No tienes cuenta?',
               style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const RegisterScreen()),
+                );
+              },
+              child: const Text(
+                'Registrate aqui',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.white),
+              ),
             ),
           ],
         ),
