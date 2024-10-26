@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:eventify/screens/login_screen.dart';
+import 'package:eventify/services/authentication.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,113 +16,204 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String email = '';
   String password = '';
 
+  // Revisar el jsonDecode
+  createAccount() async {
+    // Llama al register de la clase Authentication
+    http.Response res = await Authentication.register(name, email, password);
+    // Descodifica el json que se recoge del servidor
+    // Error en el jsonDecode, revisar
+    Map response = jsonDecode(res.body);
+    // Comprueba si la respuesta es correcta (200 = ok)
+    if (res.statusCode == 200) {
+      // Si todo esta bien redirige a la ventana correspondiente
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: const BoxDecoration(
-            gradient:
-                LinearGradient(colors: [Color(0xff162340), Color(0xff415993)])),
-        child: Column(
-          children: [
-            const SizedBox(height: 100),
-            const Padding(
-              padding: EdgeInsets.only(right: 200, left: 30),
-              child: Text(
-                '¡Bienvenido a Eventify!',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white, // Texto blanco
-                ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          //double width = constraints.maxWidth;
+          double height = constraints.maxHeight;
+
+          return Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xff162340), Color(0xff415993)],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: TextFormField(
-                decoration: InputDecoration(
-                    icon: const Icon(
-                      Icons.account_box_outlined,
-                      color: Colors.white,
-                    ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white)),
-                    labelText: 'Nombre',
-                    labelStyle:
-                        const TextStyle(color: Colors.white, fontSize: 20),
-                    suffixIconColor: Colors.white),
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 25),
+                const messageWelcome(),
+                NameField(onChanged: (value) => name = value),
+                EmailField(onChanged: (value) => email = value),
+                PasswordField(onChanged: (value) => password = value),
+                RegisterButton(onPressed: createAccount),
+                SizedBox(height: height * 0.02),
+                const LoginMessage(),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: TextFormField(
-                decoration: InputDecoration(
-                    icon: const Icon(
-                      Icons.email_outlined,
-                      color: Colors.white,
-                    ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white)),
-                    labelText: 'Correo electronico',
-                    labelStyle:
-                        const TextStyle(color: Colors.white, fontSize: 20),
-                    suffixIconColor: Colors.white),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: TextFormField(
-                decoration: InputDecoration(
-                    icon: const Icon(
-                      Icons.password_outlined,
-                      color: Colors.white,
-                    ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.white)),
-                    labelText: 'Contraseña',
-                    labelStyle:
-                        const TextStyle(color: Colors.white, fontSize: 20),
-                    suffixIconColor: Colors.white),
-              ),
-            ),
-            const SizedBox(height: 1),
-            ElevatedButton(
-              onPressed: () {
-                // Acción
-              },
-              child: const Text(
-                'Registrarse',
-                style: TextStyle(fontSize: 25, color: Colors.black),
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              '¿Ya tienes una cuenta?',
-              style: TextStyle(fontSize: 18, color: Colors.white),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
-              },
-              child: const Text(
-                'Inicia sesión',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.white),
-              ),
-            ),
-          ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class messageWelcome extends StatelessWidget {
+  const messageWelcome();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.only(right: 100, left: 30),
+      child: Text(
+        '¡Bienvenido a Eventify!',
+        style: TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
       ),
+    );
+  }
+}
+
+class NameField extends StatelessWidget {
+  final ValueChanged<String> onChanged;
+
+  const NameField({required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(30.0),
+      child: TextFormField(
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          icon: const Icon(Icons.account_box_outlined, color: Colors.white),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Colors.white),
+          ),
+          labelText: 'Nombre',
+          labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
+          suffixIconColor: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+class EmailField extends StatelessWidget {
+  final ValueChanged<String> onChanged;
+
+  const EmailField({required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(30.0),
+      child: TextFormField(
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          icon: const Icon(Icons.email_outlined, color: Colors.white),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Colors.white),
+          ),
+          labelText: 'Correo electronico',
+          labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
+          suffixIconColor: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+class PasswordField extends StatelessWidget {
+  final ValueChanged<String> onChanged;
+
+  const PasswordField({required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(30.0),
+      child: TextFormField(
+        obscureText: true,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          icon: const Icon(Icons.password_outlined, color: Colors.white),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Colors.white),
+          ),
+          labelText: 'Contraseña',
+          labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
+          suffixIconColor: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+class RegisterButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const RegisterButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: const Text(
+        'Registrarse',
+        style: TextStyle(fontSize: 20, color: Colors.black),
+      ),
+    );
+  }
+}
+
+class LoginMessage extends StatelessWidget {
+  const LoginMessage();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Text(
+          '¿Ya tienes una cuenta?',
+          style: TextStyle(fontSize: 18, color: Colors.white),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
+          },
+          child: const Text(
+            'Inicia sesión',
+            style: TextStyle(
+              fontSize: 20,
+              fontStyle: FontStyle.italic,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
