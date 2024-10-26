@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:eventify/screens/home_screen.dart';
 import 'package:eventify/screens/register_screen.dart';
 import 'package:flutter/material.dart';
@@ -7,18 +9,12 @@ import 'package:eventify/services/authentication.dart';
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
-  // String email = '';
-  // String password = '';
-
-  // login() async {
-  //   http.Response res = await Authentication.login(email, password);
-  //   Map response = jsonDecode(res.body);
-  //   if (res.statusCode == 200) {
-  //     Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-  // }
-
   @override
   Widget build(BuildContext context) {
+    // Controladores para los campos de texto
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -38,11 +34,11 @@ class LoginScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 25),
-                const messageWelcome(),
-                const emailField(),
-                const passwordField(),
+                const MessageWelcome(),
+                EmailField(controller: emailController),
+                PasswordField(controller: passwordController),
                 const SizedBox(height: 10),
-                LoginButton(),
+                LoginButton(emailController: emailController, passwordController: passwordController),
                 const SizedBox(height: 10),
                 const RegisterMessage(),
               ],
@@ -54,8 +50,8 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-class messageWelcome extends StatelessWidget {
-  const messageWelcome({super.key});
+class MessageWelcome extends StatelessWidget {
+  const MessageWelcome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -73,21 +69,23 @@ class messageWelcome extends StatelessWidget {
   }
 }
 
-class emailField extends StatelessWidget {
-  const emailField({super.key});
+class EmailField extends StatelessWidget {
+  final TextEditingController controller;
+  const EmailField({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(30.0),
       child: TextFormField(
+        controller: controller,  // Asignar el controlador aquí
         decoration: InputDecoration(
           icon: const Icon(Icons.email_outlined, color: Colors.white),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: const BorderSide(color: Colors.white, width: 5),
           ),
-          labelText: 'Correo electronico',
+          labelText: 'Correo electrónico',
           labelStyle: const TextStyle(color: Colors.white, fontSize: 15),
           suffixIconColor: Colors.white,
         ),
@@ -96,14 +94,16 @@ class emailField extends StatelessWidget {
   }
 }
 
-class passwordField extends StatelessWidget {
-  const passwordField({super.key});
+class PasswordField extends StatelessWidget {
+  final TextEditingController controller;
+  const PasswordField({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(30.0),
       child: TextFormField(
+        controller: controller,  // Asignar el controlador aquí
         obscureText: true,
         decoration: InputDecoration(
           icon: const Icon(Icons.password_outlined, color: Colors.white),
@@ -121,17 +121,63 @@ class passwordField extends StatelessWidget {
 }
 
 class LoginButton extends StatelessWidget {
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+
+  const LoginButton({
+    Key? key,
+    required this.emailController,
+    required this.passwordController,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
-        String email = '';
-        String password = '';
-        http.Response res = await Authentication.login(email, password);
-        if (res.statusCode == 200) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+        String email = emailController.text.trim();  // Obtener el texto del controlador
+        String password = passwordController.text.trim();  // Obtener el texto del controlador
+
+        if (email.isNotEmpty && password.isNotEmpty) {  // Comprobar que los campos no estén vacíos
+          http.Response res = await Authentication.login(email, password);
+          Map response = jsonDecode(res.body);
+
+          if (res.statusCode == 200) {
+            // Puedes guardar el token aquí si lo necesitas
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          } else {
+            // Mostrar un mensaje de error basado en la respuesta
+            String message = response['message'];
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Error'),
+                content: Text(message),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Cerrar'),
+                  ),
+                ],
+              ),
+            );
+          }
+        } else {
+          // Mostrar un mensaje de error si los campos están vacíos
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content: const Text('Por favor completa todos los campos.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cerrar'),
+                ),
+              ],
+            ),
           );
         }
       },
@@ -162,7 +208,7 @@ class RegisterMessage extends StatelessWidget {
             );
           },
           child: const Text(
-            'Registrate aqui',
+            'Regístrate aquí',
             style: TextStyle(
               fontSize: 20,
               fontStyle: FontStyle.italic,

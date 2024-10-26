@@ -4,27 +4,26 @@ import 'dart:convert';
 
 class Authentication {
   // Registro de usuarios
-  static Future<http.Response> register(
-      String name, String email, String password) async {
-    // Map de los datos que se necesitan para registrarse
-    Map data = {
-      "name": name,
-      "email": email,
-      "password": password,
-    };
-    // Transforma el map en un json (para el Laravel)
-    var body = json.encode(data);
-    // Url del endpoint (baseUrl se encuentra en el archivo api.dart)
-    var url = Uri.parse('$baseUrl/register');
-    // Envia la peticion POST
-    http.Response res = await http.post(url, headers: header, body: body);
-    // Debug
-    print(res.body);
-    return res;
+  static Future<http.Response> register(String name, String email, String password, String cPassword, String role) async {
+    final response = await http.post(
+      Uri.parse('https://eventify.allsites.es/public/api/register'),
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json',},
+      body: json.encode({
+        'name': name,
+        'email': email,
+        'password': password,
+        'c_password': cPassword,
+        'role': 'u',
+      }),
+    );
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    return response;
   }
 
-  // Este metodo funciona de la misma manera que el anterior
-  // pero para el inicio de sesión.
+
   static Future<http.Response> login(String email, String password) async {
     Map data = {
       "email": email,
@@ -32,9 +31,14 @@ class Authentication {
     };
     var body = json.encode(data);
     var url = Uri.parse('$baseUrl/login');
-    // Revisar
-    http.Response res = await http.post(url, headers: header, body: body);
+    var headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json', // Asegurar que el servidor sepa que esperas JSON
+    };
+
+    http.Response res = await http.post(url, headers: headers, body: body);
     print(res.body);
     return res;
   }
+
 }

@@ -15,22 +15,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String name = '';
   String email = '';
   String password = '';
+  String confirmPassword = '';
+  String role = 'u'; // Cambia el rol según sea necesario ('u', 'a', 'o')
 
-  // Revisar el jsonDecode
   createAccount() async {
-    // Llama al register de la clase Authentication
-    http.Response res = await Authentication.register(name, email, password);
-    // Descodifica el json que se recoge del servidor
-    // Error en el jsonDecode, revisar
-    Map response = jsonDecode(res.body);
-    // Comprueba si la respuesta es correcta (200 = ok)
-    if (res.statusCode == 200) {
-      // Si todo esta bien redirige a la ventana correspondiente
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          ));
+    try {
+      http.Response res = await Authentication.register(name, email, password, password, 'u'); // Rol por defecto
+
+      // Decodificar la respuesta JSON
+      Map response = jsonDecode(res.body); // Esto lanzará un error si no es un JSON válido
+
+      if (res.statusCode == 200 && response['success']) {
+        // Imprimir los datos en la consola
+        print('Registro exitoso:');
+        print('Nombre: ${response['data']['name']}');
+        print('Email: ${response['data']['email']}');
+        print('Role: ${response['data']['role']}');
+        print('ID: ${response['data']['id']}');
+
+        // Redirigir al Login
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginScreen(),
+            ));
+      } else {
+        // Manejar el error (mostrar mensaje)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response['message'] ?? 'Error en el registro')),
+        );
+      }
+    } catch (e) {
+      print('Error: $e'); // Imprimir error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error en la solicitud: $e')),
+      );
     }
   }
 
@@ -39,7 +58,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
-          //double width = constraints.maxWidth;
           double height = constraints.maxHeight;
 
           return Container(
@@ -55,10 +73,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 25),
-                const messageWelcome(),
+                const MessageWelcome(),
                 NameField(onChanged: (value) => name = value),
                 EmailField(onChanged: (value) => email = value),
                 PasswordField(onChanged: (value) => password = value),
+                ConfirmPasswordField(onChanged: (value) => confirmPassword = value),
                 RegisterButton(onPressed: createAccount),
                 SizedBox(height: height * 0.02),
                 const LoginMessage(),
@@ -71,8 +90,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-class messageWelcome extends StatelessWidget {
-  const messageWelcome();
+class MessageWelcome extends StatelessWidget {
+  const MessageWelcome();
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +152,7 @@ class EmailField extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             borderSide: const BorderSide(color: Colors.white),
           ),
-          labelText: 'Correo electronico',
+          labelText: 'Correo electrónico',
           labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
           suffixIconColor: Colors.white,
         ),
@@ -161,6 +180,33 @@ class PasswordField extends StatelessWidget {
             borderSide: const BorderSide(color: Colors.white),
           ),
           labelText: 'Contraseña',
+          labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
+          suffixIconColor: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+class ConfirmPasswordField extends StatelessWidget {
+  final ValueChanged<String> onChanged;
+
+  const ConfirmPasswordField({required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(30.0),
+      child: TextFormField(
+        obscureText: true,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          icon: const Icon(Icons.lock_outline, color: Colors.white),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Colors.white),
+          ),
+          labelText: 'Confirmar Contraseña',
           labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
           suffixIconColor: Colors.white,
         ),
