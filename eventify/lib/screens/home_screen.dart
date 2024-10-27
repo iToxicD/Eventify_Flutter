@@ -1,4 +1,8 @@
+import 'package:eventify/screens/config_users.dart';
+import 'package:eventify/widgets/background.dart';
+import 'package:eventify/widgets/lateralMenu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -6,27 +10,14 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: const BoxDecoration(
-            gradient:
-                LinearGradient(colors: [Color(0xff162340), Color(0xff415993)])),
-        child: const Column(children: [
-          SizedBox(height: 100),
-          Padding(
-            padding: EdgeInsets.only(right: 200, left: 30),
-            child: Text(
-              '¡Bienvenido a Eventify!',
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-                color: Colors.white, // Texto blanco
-              ),
-            ),
-          ),
-        ]),
+      appBar: AppBar(
+        title: const Text("Home Screen"),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 68, 65, 248),
+        // Color del AppBar
       ),
+      body: const ConfigUsers(),
+      drawer: const Lateralmenu(),
     );
   }
 }

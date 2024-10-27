@@ -38,7 +38,9 @@ class LoginScreen extends StatelessWidget {
                 EmailField(controller: emailController),
                 PasswordField(controller: passwordController),
                 const SizedBox(height: 10),
-                LoginButton(emailController: emailController, passwordController: passwordController),
+                LoginButton(
+                    emailController: emailController,
+                    passwordController: passwordController),
                 const SizedBox(height: 10),
                 const RegisterMessage(),
               ],
@@ -78,7 +80,7 @@ class EmailField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(30.0),
       child: TextFormField(
-        controller: controller,  // Asignar el controlador aquí
+        controller: controller, // Asignar el controlador aquí
         decoration: InputDecoration(
           icon: const Icon(Icons.email_outlined, color: Colors.white),
           border: OutlineInputBorder(
@@ -103,7 +105,7 @@ class PasswordField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(30.0),
       child: TextFormField(
-        controller: controller,  // Asignar el controlador aquí
+        controller: controller, // Asignar el controlador aquí
         obscureText: true,
         decoration: InputDecoration(
           icon: const Icon(Icons.password_outlined, color: Colors.white),
@@ -134,10 +136,13 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
-        String email = emailController.text.trim();  // Obtener el texto del controlador
-        String password = passwordController.text.trim();  // Obtener el texto del controlador
+        String email =
+            emailController.text.trim(); // Obtener el texto del controlador
+        String password =
+            passwordController.text.trim(); // Obtener el texto del controlador
 
-        if (email.isNotEmpty && password.isNotEmpty) {  // Comprobar que los campos no estén vacíos
+        if (email.isNotEmpty && password.isNotEmpty) {
+          // Comprobar que los campos no estén vacíos
           http.Response res = await Authentication.login(email, password);
           Map response = jsonDecode(res.body);
 
