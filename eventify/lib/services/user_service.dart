@@ -45,7 +45,7 @@ class UserService {
 
   static Future<http.Response> getUsers() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('authToken');
+    String? token = prefs.getString('auth_token');
 
     var url = Uri.parse('$baseUrl/users');
     var headers = {
@@ -63,7 +63,7 @@ class UserService {
 
   static Future<http.Response> deleteUser(String userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('authToken');
+    String? token = prefs.getString('auth_token');
 
     var url = Uri.parse('$baseUrl/deleteUser');
     var headers = {
@@ -82,7 +82,7 @@ class UserService {
 
   static Future<http.Response> updateUser(String userId, String newName) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('authToken');
+    String? token = prefs.getString('auth_token');
 
     var url = Uri.parse('$baseUrl/updateUser');
     var headers = {

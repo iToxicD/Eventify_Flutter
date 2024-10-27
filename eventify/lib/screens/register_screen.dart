@@ -20,7 +20,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   createAccount() async {
     try {
-      http.Response res = await Authentication.register(name, email, password, password, 'u'); // Rol por defecto
+      http.Response res = await Authentication.register(name, email, password, password, role); // Rol por defecto
 
       // Decodificar la respuesta JSON
       Map response = jsonDecode(res.body); // Esto lanzará un error si no es un JSON válido
