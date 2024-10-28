@@ -15,7 +15,7 @@ class Authentication {
         'email': email,
         'password': password,
         'c_password': cPassword,
-        'role': 'u',
+        'role': role,
       }),
     );
 

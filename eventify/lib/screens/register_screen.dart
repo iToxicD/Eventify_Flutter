@@ -16,12 +16,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String email = '';
   String password = '';
   String confirmPassword = '';
-  String role = 'u'; // Cambia el rol según sea necesario ('u', 'a', 'o')
+  String role = '';
 
   createAccount() async {
     try {
-      http.Response res = await Authentication.register(
-          name, email, password, password, role); // Rol por defecto
+      http.Response res = await Authentication.register(name, email, password, password, role);
 
       // Decodificar la respuesta JSON
       Map response =
@@ -80,8 +79,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 NameField(onChanged: (value) => name = value),
                 EmailField(onChanged: (value) => email = value),
                 PasswordField(onChanged: (value) => password = value),
-                ConfirmPasswordField(
-                    onChanged: (value) => confirmPassword = value),
+                ConfirmPasswordField(onChanged: (value) => confirmPassword = value),
+                RoleField(onChanged: (value) => role = value ?? 'u'),
                 RegisterButton(onPressed: createAccount),
                 SizedBox(height: height * 0.02),
                 const LoginMessage(),
@@ -222,6 +221,54 @@ class ConfirmPasswordField extends StatelessWidget {
     );
   }
 }
+
+class RoleField extends StatefulWidget {
+  final ValueChanged<String?> onChanged;
+  const RoleField({super.key, required this.onChanged});
+
+  @override
+  _RoleFieldState createState() => _RoleFieldState();
+}
+
+class _RoleFieldState extends State<RoleField> {
+  String selectedRole = 'u'; // Rol preseleccionado
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+      child: DropdownButtonFormField<String>(
+        value: selectedRole,
+        decoration: InputDecoration(
+          labelText: 'Seleccione su rol',
+          labelStyle: const TextStyle(color: Colors.white),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.1),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        items: const [
+          DropdownMenuItem(value: 'u', child: Text("Usuario")),
+          DropdownMenuItem(value: 'o', child: Text("Organizador")),
+        ],
+        onChanged: (value) {
+          setState(() {
+            selectedRole = value!;
+          });
+          widget.onChanged(value);
+        },
+        style: const TextStyle(color: Colors.white),
+        dropdownColor: Colors.blueGrey,
+        hint: const Text(
+          "Seleccione su rol",
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
 
 class RegisterButton extends StatelessWidget {
   final VoidCallback onPressed;
