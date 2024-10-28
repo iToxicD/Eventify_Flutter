@@ -1,3 +1,4 @@
+import 'package:eventify/services/authentication.dart';
 import 'package:flutter/material.dart';
 
 class Menu extends StatelessWidget {
@@ -36,7 +37,8 @@ class Menu extends StatelessWidget {
             leading: Icon(Icons.logout),
             title: Text('Logout'),
             onTap: () {
-              Navigator.pushNamed(context, '/users');
+              Authentication.logout();
+              Navigator.pushNamed(context, '/login');
             },
           )
         ],

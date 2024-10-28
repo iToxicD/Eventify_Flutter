@@ -73,7 +73,7 @@ class UserService {
     var body = json.encode({"id": userId});
 
     var response = await http.post(url, headers: headers, body: body);
-
+    print(userId);
     print("Eliminar Usuario - Status Code: ${response.statusCode}");
     print("Response Body: ${response.body}");
 

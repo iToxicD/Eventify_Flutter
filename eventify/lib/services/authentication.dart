@@ -49,4 +49,8 @@ class Authentication {
     return res;
   }
 
+  static Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token'); // Elimina el token de SharedPreferences
+  }
 }

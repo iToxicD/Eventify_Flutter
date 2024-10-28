@@ -83,7 +83,7 @@ class _UserListScreenState extends State<UserListScreen> {
                       ),
                       SlidableAction(
                         onPressed: (context) {
-                          // Navegar a la pantalla de edición
+                          // Acción de editar
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -103,6 +103,7 @@ class _UserListScreenState extends State<UserListScreen> {
                       SlidableAction(
                         onPressed: (context) {
                           // Acción para eliminar
+                          deleteUserHandler(user['id'].toString());
                         },
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
@@ -141,4 +142,20 @@ class _UserListScreenState extends State<UserListScreen> {
             ),
     );
   }
+
+  void deleteUserHandler(String userId) async {
+    var response = await UserService.deleteUser(userId);
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Usuario eliminado correctamente')),
+      );
+      fetchUsers(); // Actualizar la lista de usuarios después de eliminar
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${response.statusCode}')),
+      );
+    }
+  }
+
 }
