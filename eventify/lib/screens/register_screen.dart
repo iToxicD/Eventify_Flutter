@@ -20,10 +20,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   createAccount() async {
     try {
-      http.Response res = await Authentication.register(name, email, password, password, role); // Rol por defecto
+      http.Response res = await Authentication.register(
+          name, email, password, password, role); // Rol por defecto
 
       // Decodificar la respuesta JSON
-      Map response = jsonDecode(res.body); // Esto lanzará un error si no es un JSON válido
+      Map response =
+          jsonDecode(res.body); // Esto lanzará un error si no es un JSON válido
 
       if (res.statusCode == 200 && response['success']) {
         // Imprimir los datos en la consola
@@ -42,7 +44,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else {
         // Manejar el error (mostrar mensaje)
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response['message'] ?? 'Error en el registro')),
+          SnackBar(
+              content: Text(response['message'] ?? 'Error en el registro')),
         );
       }
     } catch (e) {
@@ -77,7 +80,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 NameField(onChanged: (value) => name = value),
                 EmailField(onChanged: (value) => email = value),
                 PasswordField(onChanged: (value) => password = value),
-                ConfirmPasswordField(onChanged: (value) => confirmPassword = value),
+                ConfirmPasswordField(
+                    onChanged: (value) => confirmPassword = value),
                 RegisterButton(onPressed: createAccount),
                 SizedBox(height: height * 0.02),
                 const LoginMessage(),
@@ -120,6 +124,7 @@ class NameField extends StatelessWidget {
       padding: const EdgeInsets.all(30.0),
       child: TextFormField(
         onChanged: onChanged,
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           icon: const Icon(Icons.account_box_outlined, color: Colors.white),
           border: OutlineInputBorder(
@@ -146,6 +151,7 @@ class EmailField extends StatelessWidget {
       padding: const EdgeInsets.all(30.0),
       child: TextFormField(
         onChanged: onChanged,
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           icon: const Icon(Icons.email_outlined, color: Colors.white),
           border: OutlineInputBorder(
@@ -173,6 +179,7 @@ class PasswordField extends StatelessWidget {
       child: TextFormField(
         obscureText: true,
         onChanged: onChanged,
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           icon: const Icon(Icons.password_outlined, color: Colors.white),
           border: OutlineInputBorder(
@@ -200,6 +207,7 @@ class ConfirmPasswordField extends StatelessWidget {
       child: TextFormField(
         obscureText: true,
         onChanged: onChanged,
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           icon: const Icon(Icons.lock_outline, color: Colors.white),
           border: OutlineInputBorder(
