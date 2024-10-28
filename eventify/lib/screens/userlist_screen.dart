@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:eventify/menu/menu.dart';
 import 'package:eventify/services/user_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class UserListScreen extends StatefulWidget {
   const UserListScreen({super.key});
@@ -44,40 +45,92 @@ class _UserListScreenState extends State<UserListScreen> {
       drawer: Menu(),
       body: users.isEmpty
           ? const Center(
-        child: CircularProgressIndicator(), // Cargando
-      )
+              child: CircularProgressIndicator(), // Cargando
+            )
           : ListView.builder(
-        padding: const EdgeInsets.all(8.0),
-        itemCount: users.length,
-        itemBuilder: (context, index) {
-          // Extraemos cada usuario de la lista
-          var user = users[index];
-          return Card(
-            color: const Color(0xff162340),
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              padding: const EdgeInsets.all(8.0),
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                // Extraemos cada usuario de la lista
+                var user = users[index];
+                return Slidable(
+                  key: ValueKey(
+                      user['id']), // Asegúrate de que sea una clave única
+                  startActionPane: ActionPane(
+                    motion: const ScrollMotion(),
+                    children: [
+                      SlidableAction(
+                        onPressed: (context) {
+                          // Acción para editar
+                        },
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        icon: Icons.task_alt,
+                        label: 'Activar',
+                      ),
+                      SlidableAction(
+                        onPressed: (context) {
+                          // Acción para editar
+                        },
+                        backgroundColor: Colors.yellow,
+                        foregroundColor: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        icon: Icons.close,
+                        label: 'Desactivar',
+                      ),
+                      SlidableAction(
+                        onPressed: (context) {
+                          // Acción para editar
+                        },
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        icon: Icons.edit,
+                        label: 'Editar',
+                      ),
+                      SlidableAction(
+                        onPressed: (context) {
+                          // Acción para eliminar
+                        },
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        icon: Icons.delete,
+                        label: 'Eliminar',
+                      ),
+                    ],
+                  ),
+                  child: Card(
+                    color: const Color(0xff162340),
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        user['name'] ?? 'Nombre no disponible',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text(
+                        user['email'] ?? 'Email no disponible',
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                      trailing: Text(
+                        user['role'] ?? 'Rol no disponible',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-            child: ListTile(
-              title: Text(
-                user['name'] ?? 'Nombre no disponible',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Text(
-                user['email'] ?? 'Email no disponible',
-                style: const TextStyle(color: Colors.white70),
-              ),
-              trailing: Text(
-                user['role'] ?? 'Rol no disponible',
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 }

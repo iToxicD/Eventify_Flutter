@@ -9,9 +9,11 @@ class Menu extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue),
-            child: Text(
+          DrawerHeader(
+            decoration: BoxDecoration(
+                color: const Color(0xff415993),
+                borderRadius: BorderRadius.circular(10)),
+            child: const Text(
               'Menú',
               style: TextStyle(color: Colors.white, fontSize: 24),
             ),

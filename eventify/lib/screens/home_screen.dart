@@ -14,10 +14,15 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Home Screen"),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 68, 65, 248),
+        backgroundColor: const Color(0xff415993),
         // Color del AppBar
       ),
-      body: const ConfigUsers(),
+      body: const Background(
+          child: Text(
+        "Hola",
+        style: TextStyle(fontSize: 25),
+      )),
+
       //drawer: const Lateralmenu(),
       drawer: Menu(),
     );
