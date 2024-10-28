@@ -3,6 +3,7 @@ import 'package:eventify/widgets/background.dart';
 import 'package:eventify/widgets/lateralMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import '../menu/menu.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -17,7 +18,8 @@ class HomeScreen extends StatelessWidget {
         // Color del AppBar
       ),
       body: const ConfigUsers(),
-      drawer: const Lateralmenu(),
+      //drawer: const Lateralmenu(),
+      drawer: Menu(),
     );
   }
 }

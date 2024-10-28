@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:eventify/menu/menu.dart';
 import 'package:eventify/services/user_service.dart';
 import 'package:flutter/material.dart';
 
@@ -40,6 +41,7 @@ class _UserListScreenState extends State<UserListScreen> {
         title: const Text('Lista de Usuarios'),
         backgroundColor: const Color(0xff415993),
       ),
+      drawer: Menu(),
       body: users.isEmpty
           ? const Center(
         child: CircularProgressIndicator(), // Cargando
