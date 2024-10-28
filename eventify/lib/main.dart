@@ -1,6 +1,4 @@
 import 'package:eventify/routes/app_routes.dart';
-import 'package:eventify/screens/home_screen.dart';
-import 'package:eventify/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

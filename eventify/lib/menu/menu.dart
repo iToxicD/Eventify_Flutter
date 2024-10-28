@@ -19,15 +19,15 @@ class Menu extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
             onTap: () {
               Navigator.pushNamed(context, '/home');
             },
           ),
           ListTile(
-            leading: Icon(Icons.pageview),
-            title: Text('Users'),
+            leading: const Icon(Icons.pageview),
+            title: const Text('Users'),
             onTap: () {
               Navigator.pushNamed(context, '/users');
             },

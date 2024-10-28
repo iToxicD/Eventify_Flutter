@@ -1,8 +1,5 @@
-import 'package:eventify/screens/config_users.dart';
 import 'package:eventify/widgets/background.dart';
-import 'package:eventify/widgets/lateralMenu.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import '../menu/menu.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -24,7 +21,7 @@ class HomeScreen extends StatelessWidget {
       )),
 
       //drawer: const Lateralmenu(),
-      drawer: Menu(),
+      drawer: const Menu(),
     );
   }
 }

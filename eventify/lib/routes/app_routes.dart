@@ -11,9 +11,9 @@ class AppRoutes {
   static const String register = '/register';
 
   static final routes = <String, WidgetBuilder>{
-    home: (context) => HomeScreen(),
-    listUser: (context) => UserListScreen(),
-    login: (context) => LoginScreen(),
-    register: (context) => RegisterScreen(),
+    home: (context) => const HomeScreen(),
+    listUser: (context) => const UserListScreen(),
+    login: (context) => const LoginScreen(),
+    register: (context) => const RegisterScreen(),
   };
 }

@@ -1,6 +1,4 @@
-import 'package:eventify/screens/config_users.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class Lateralmenu extends StatefulWidget {
   const Lateralmenu({super.key});
@@ -29,7 +27,7 @@ class _LateralmenuState extends State<Lateralmenu> {
             child: Text("Menú principal"),
           ),
           Padding(
-              padding: const EdgeInsets.fromLTRB(18, 8, 18, 10),
+              padding: EdgeInsets.fromLTRB(18, 8, 18, 10),
               child: Divider()),
           NavigationDrawerDestination(
             icon: Icon(Icons.account_circle),

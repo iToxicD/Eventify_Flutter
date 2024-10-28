@@ -89,13 +89,15 @@ class UserService {
       "Accept": "application/json",
       "Authorization": "Bearer $token",
     };
-    var body = json.encode({
+    var body = jsonEncode({
       "id": userId,
       "name": newName,
     });
 
     var response = await http.post(url, headers: headers, body: body);
-
+    print(userId);
+    print(newName);
+    print(token);
     print("Actualizar Usuario - Status Code: ${response.statusCode}");
     print("Response Body: ${response.body}");
 

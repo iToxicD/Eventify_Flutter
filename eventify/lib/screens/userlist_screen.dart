@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:eventify/menu/menu.dart';
+import 'package:eventify/screens/update_user_screen.dart';
 import 'package:eventify/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -42,7 +43,7 @@ class _UserListScreenState extends State<UserListScreen> {
         title: const Text('Lista de Usuarios'),
         backgroundColor: const Color(0xff415993),
       ),
-      drawer: Menu(),
+      drawer: const Menu(),
       body: users.isEmpty
           ? const Center(
               child: CircularProgressIndicator(), // Cargando
@@ -72,7 +73,7 @@ class _UserListScreenState extends State<UserListScreen> {
                       ),
                       SlidableAction(
                         onPressed: (context) {
-                          // Acción para editar
+                          // Acción para desactivar
                         },
                         backgroundColor: Colors.yellow,
                         foregroundColor: Colors.white,
@@ -83,7 +84,16 @@ class _UserListScreenState extends State<UserListScreen> {
                       ),
                       SlidableAction(
                         onPressed: (context) {
-                          // Acción para editar
+                          // Navegar a la pantalla de edición
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => UpdateUserScreen(
+                                userId: user['id'].toString(),
+                                userName: user['name'],
+                              ),
+                            ),
+                          );
                         },
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
