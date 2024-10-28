@@ -19,19 +19,26 @@ class Menu extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Home'),
+            leading: Icon(Icons.home),
+            title: Text('Home'),
             onTap: () {
               Navigator.pushNamed(context, '/home');
             },
           ),
           ListTile(
-            leading: const Icon(Icons.pageview),
-            title: const Text('Users'),
+            leading: Icon(Icons.account_box),
+            title: Text('Users'),
             onTap: () {
               Navigator.pushNamed(context, '/users');
             },
           ),
+          ListTile(
+            leading: Icon(Icons.logout),
+            title: Text('Logout'),
+            onTap: () {
+              Navigator.pushNamed(context, '/users');
+            },
+          )
         ],
       ),
     );

@@ -42,6 +42,7 @@ class _UserListScreenState extends State<UserListScreen> {
       appBar: AppBar(
         title: const Text('Lista de Usuarios'),
         backgroundColor: const Color(0xff415993),
+        shadowColor: Colors.grey[700],
       ),
       drawer: const Menu(),
       body: users.isEmpty
@@ -69,18 +70,16 @@ class _UserListScreenState extends State<UserListScreen> {
                         borderRadius: BorderRadius.circular(10),
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         icon: Icons.task_alt,
-                        label: 'Activar',
                       ),
                       SlidableAction(
                         onPressed: (context) {
                           // Acción para desactivar
                         },
-                        backgroundColor: Colors.yellow,
+                        backgroundColor: Colors.yellow.shade700,
                         foregroundColor: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         icon: Icons.close,
-                        label: 'Desactivar',
                       ),
                       SlidableAction(
                         onPressed: (context) {
@@ -100,7 +99,6 @@ class _UserListScreenState extends State<UserListScreen> {
                         borderRadius: BorderRadius.circular(10),
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         icon: Icons.edit,
-                        label: 'Editar',
                       ),
                       SlidableAction(
                         onPressed: (context) {
@@ -109,8 +107,8 @@ class _UserListScreenState extends State<UserListScreen> {
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         borderRadius: BorderRadius.circular(10),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
                         icon: Icons.delete,
-                        label: 'Eliminar',
                       ),
                     ],
                   ),

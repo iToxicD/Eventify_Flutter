@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:eventify/screens/register_screen.dart';
 import 'package:eventify/screens/userlist_screen.dart';
 import 'package:flutter/material.dart';
@@ -81,6 +80,8 @@ class EmailField extends StatelessWidget {
       padding: const EdgeInsets.all(30.0),
       child: TextFormField(
         controller: controller, // Asignar el controlador aquí
+        style:
+            const TextStyle(color: Colors.white), // Color del texto ingresado
         decoration: InputDecoration(
           icon: const Icon(Icons.email_outlined, color: Colors.white),
           border: OutlineInputBorder(
@@ -107,6 +108,7 @@ class PasswordField extends StatelessWidget {
       child: TextFormField(
         controller: controller, // Asignar el controlador aquí
         obscureText: true,
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           icon: const Icon(Icons.password_outlined, color: Colors.white),
           border: OutlineInputBorder(
@@ -127,10 +129,10 @@ class LoginButton extends StatelessWidget {
   final TextEditingController passwordController;
 
   const LoginButton({
-    super.key,
+    Key? key,
     required this.emailController,
     required this.passwordController,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
