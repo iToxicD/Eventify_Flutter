@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:eventify/services/authentication.dart';
 
+import '../middleware/role_middleware.dart';
+
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -162,12 +164,7 @@ class LoginButton extends StatelessWidget {
           Map response = jsonDecode(res.body);
 
           if (res.statusCode == 200) {
-            // Puedes guardar el token aquí si lo necesitas
-            Navigator.push(
-              context,
-              //MaterialPageRoute(builder: (context) => const HomeScreen()),
-              MaterialPageRoute(builder: (context) => const UserListScreen()),
-            );
+            RoleMiddleware.authorize(context, const UserListScreen());
           } else {
             // Mostrar un mensaje de error basado en la respuesta
             String message = response['message'];
