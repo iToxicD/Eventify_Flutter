@@ -128,9 +128,9 @@ class NameField extends StatelessWidget {
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           icon: const Icon(Icons.account_box_outlined, color: Colors.white),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+          enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(10),
           ),
           labelText: 'Nombre',
           labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
@@ -155,9 +155,9 @@ class EmailField extends StatelessWidget {
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           icon: const Icon(Icons.email_outlined, color: Colors.white),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+          enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(10),
           ),
           labelText: 'Correo electrónico',
           labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
@@ -183,9 +183,9 @@ class PasswordField extends StatelessWidget {
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           icon: const Icon(Icons.password_outlined, color: Colors.white),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+          enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(10),
           ),
           labelText: 'Contraseña',
           labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
@@ -211,9 +211,9 @@ class ConfirmPasswordField extends StatelessWidget {
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           icon: const Icon(Icons.lock_outline, color: Colors.white),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+          enabledBorder: OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(10),
           ),
           labelText: 'Confirmar Contraseña',
           labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
@@ -246,7 +246,8 @@ class _RoleFieldState extends State<RoleField> {
           labelStyle: const TextStyle(color: Colors.white),
           filled: true,
           fillColor: Colors.white.withOpacity(0.1),
-          border: OutlineInputBorder(
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.white),
             borderRadius: BorderRadius.circular(10),
           ),
         ),
