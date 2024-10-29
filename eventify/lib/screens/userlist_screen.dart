@@ -63,7 +63,8 @@ class _UserListScreenState extends State<UserListScreen> {
                     children: [
                       SlidableAction(
                         onPressed: (context) {
-                          // Acción para editar
+                          // Acción de activar
+                          _activateUser(user['id'].toString());
                         },
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
@@ -74,6 +75,7 @@ class _UserListScreenState extends State<UserListScreen> {
                       SlidableAction(
                         onPressed: (context) {
                           // Acción para desactivar
+                          _deactivateUser(user['id'].toString());
                         },
                         backgroundColor: Colors.yellow.shade700,
                         foregroundColor: Colors.white,
@@ -151,6 +153,32 @@ class _UserListScreenState extends State<UserListScreen> {
         const SnackBar(content: Text('Usuario eliminado correctamente')),
       );
       fetchUsers(); // Actualizar la lista de usuarios después de eliminar
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${response.statusCode}')),
+      );
+    }
+  }
+
+  void _activateUser(String userId) async {
+    var response = await UserService.activateUser(userId);
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Usuario activado con éxito')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${response.statusCode}')),
+      );
+    }
+  }
+
+  void _deactivateUser(String userId) async {
+    var response = await UserService.deactivateUser(userId);
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Usuario desactivado con éxito')),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${response.statusCode}')),

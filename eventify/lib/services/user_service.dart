@@ -11,6 +11,7 @@ class UserService {
 
     Map<String, String> headers = {
       'Accept': 'application/json',
+      "Content-Type": "application/json",
       'Authorization': 'Bearer $token',
     };
 
@@ -31,6 +32,7 @@ class UserService {
     Map<String, String> headers = {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
+      "Content-Type": "application/json",
     };
 
     var body = json.encode({"id": id});
@@ -69,6 +71,7 @@ class UserService {
     var headers = {
       "Accept": "application/json",
       "Authorization": "Bearer $token",
+      "Content-Type": "application/json",
     };
     var body = json.encode({"id": userId});
 
@@ -88,6 +91,7 @@ class UserService {
     var headers = {
       "Accept": "application/json",
       "Authorization": "Bearer $token",
+      "Content-Type": "application/json",
     };
     var body = jsonEncode({
       "id": userId,
