@@ -260,6 +260,7 @@ class _RoleFieldState extends State<RoleField> {
         },
         style: const TextStyle(color: Colors.white),
         dropdownColor: Colors.blueGrey,
+        borderRadius: BorderRadius.circular(10),
         hint: const Text(
           "Seleccione su rol",
           style: TextStyle(color: Colors.white),
