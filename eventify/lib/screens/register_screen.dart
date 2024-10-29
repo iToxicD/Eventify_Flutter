@@ -70,6 +70,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 colors: [Color(0xff162340), Color(0xff415993)],
               ),
             ),
+            child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -85,6 +86,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(height: height * 0.02),
                 const LoginMessage(),
               ],
+            ),
             ),
           );
         },
