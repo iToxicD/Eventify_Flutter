@@ -40,9 +40,17 @@ class _UserListScreenState extends State<UserListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista de Usuarios'),
+        title: const Text('Lista de Usuarios', style: TextStyle(color: Colors.white),),
         backgroundColor: const Color(0xff415993),
         shadowColor: Colors.grey[700],
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(colors: [
+              Color(0xff162340),
+              Color(0xff415993),
+            ]),
+          ),
+        ),
       ),
       drawer: const Menu(),
       body: users.isEmpty
