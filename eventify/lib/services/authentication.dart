@@ -39,10 +39,12 @@ class Authentication {
     if (res.statusCode == 200) {
       Map<String, dynamic> responseData = jsonDecode(res.body);
       String token = responseData['data']['token'];
+      String role = responseData['data']['role'];
 
       // Guardar el token en shared_preferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', token);
+      await prefs.setString('role', role);
     }
 
     print(res.body);
@@ -51,6 +53,6 @@ class Authentication {
 
   static Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token'); // Elimina el token de SharedPreferences
+    await prefs.clear(); // Elimina todos los valores guardados
   }
 }
