@@ -109,7 +109,7 @@ class _UserListScreenState extends State<UserListScreen> {
                       ),
                       SlidableAction(
                         onPressed: (context) {
-                          deleteUserHandler(user['id'].toString());
+                          confirmDeleteUser(user['id'].toString());
                         },
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
@@ -148,6 +148,34 @@ class _UserListScreenState extends State<UserListScreen> {
             ),
     );
   }
+
+  void confirmDeleteUser(String userId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirmar eliminación"),
+          content: const Text("¿Estás seguro de que deseas eliminar este usuario?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el cuadro de diálogo
+              },
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el cuadro de diálogo
+                deleteUserHandler(userId); // Llama a la función de eliminación
+              },
+              child: const Text("Eliminar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   void deleteUserHandler(String userId) async {
     var response = await UserService.deleteUser(userId);
