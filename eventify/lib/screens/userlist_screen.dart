@@ -65,14 +65,13 @@ class _UserListScreenState extends State<UserListScreen> {
                 // Extraemos cada usuario de la lista
                 var user = users[index];
                 return Slidable(
-                  key: ValueKey(
-                      user['id']), // Asegúrate de que sea una clave única
+                  key: ValueKey(user['id']),
                   startActionPane: ActionPane(
                     motion: const ScrollMotion(),
                     children: [
-                      SlidableAction(
+                      user['actived'] == 0
+                          ? SlidableAction(
                         onPressed: (context) {
-                          // Acción de activar
                           _activateUser(user['id'].toString());
                         },
                         backgroundColor: Colors.green,
@@ -80,10 +79,9 @@ class _UserListScreenState extends State<UserListScreen> {
                         borderRadius: BorderRadius.circular(10),
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         icon: Icons.task_alt,
-                      ),
-                      SlidableAction(
+                      )
+                          : SlidableAction(
                         onPressed: (context) {
-                          // Acción para desactivar
                           _deactivateUser(user['id'].toString());
                         },
                         backgroundColor: Colors.yellow.shade700,
@@ -94,7 +92,6 @@ class _UserListScreenState extends State<UserListScreen> {
                       ),
                       SlidableAction(
                         onPressed: (context) {
-                          // Acción de editar
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -113,7 +110,6 @@ class _UserListScreenState extends State<UserListScreen> {
                       ),
                       SlidableAction(
                         onPressed: (context) {
-                          // Acción para eliminar
                           deleteUserHandler(user['id'].toString());
                         },
                         backgroundColor: Colors.red,
@@ -175,6 +171,7 @@ class _UserListScreenState extends State<UserListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Usuario activado con éxito')),
       );
+      fetchUsers(); // Actualizar la lista de usuarios después de ctivar un usuario
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${response.statusCode}')),
@@ -188,6 +185,7 @@ class _UserListScreenState extends State<UserListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Usuario desactivado con éxito')),
       );
+      fetchUsers(); // Actualizar la lista de usuarios después de desactivar un usuario
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${response.statusCode}')),
