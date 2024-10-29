@@ -20,22 +20,22 @@ class Menu extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
             onTap: () {
               Navigator.pushNamed(context, '/home');
             },
           ),
           ListTile(
-            leading: Icon(Icons.account_box),
-            title: Text('Users'),
+            leading: const Icon(Icons.account_box),
+            title: const Text('Users'),
             onTap: () {
               Navigator.pushNamed(context, '/users');
             },
           ),
           ListTile(
-            leading: Icon(Icons.logout),
-            title: Text('Logout'),
+            leading: const Icon(Icons.logout),
+            title: const Text('Logout'),
             onTap: () {
               Authentication.logout();
               Navigator.pushNamed(context, '/login');
