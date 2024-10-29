@@ -41,6 +41,7 @@ class _UserListScreenState extends State<UserListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lista de Usuarios', style: TextStyle(color: Colors.white),),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xff415993),
         shadowColor: Colors.grey[700],
         flexibleSpace: Container(
