@@ -20,7 +20,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   createAccount() async {
     try {
-      http.Response res = await Authentication.register(name, email, password, password, role);
+      http.Response res =
+          await Authentication.register(name, email, password, password, role);
 
       // Decodificar la respuesta JSON
       Map response =
@@ -67,26 +68,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
             height: double.infinity,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xff162340), Color(0xff415993)],
+                colors: [
+                  Color(0xff620091),
+                  Color(0xff8a0db7),
+                  Color(0xffb11adc)
+                ],
               ),
             ),
-            child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: Stack(
+              // Cambiamos a Stack para superponer el nuevo contenedor
               children: [
-                const SizedBox(height: 25),
-                const MessageWelcome(),
-                NameField(onChanged: (value) => name = value),
-                EmailField(onChanged: (value) => email = value),
-                PasswordField(onChanged: (value) => password = value),
-                ConfirmPasswordField(onChanged: (value) => confirmPassword = value),
-                RoleField(onChanged: (value) => role = value ?? 'u'),
-                RegisterButton(onPressed: createAccount),
-                SizedBox(height: height * 0.02),
-                const LoginMessage(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 300),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 80),
+                          const MessageWelcome(),
+                          NameField(onChanged: (value) => name = value),
+                          EmailField(onChanged: (value) => email = value),
+                          PasswordField(onChanged: (value) => password = value),
+                          ConfirmPasswordField(
+                              onChanged: (value) => confirmPassword = value),
+                          RoleField(onChanged: (value) => role = value ?? 'u'),
+                          const SizedBox(height: 10),
+                          RegisterButton(onPressed: createAccount),
+                          const SizedBox(height: 1),
+                          const LoginMessage(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
-            ),
             ),
           );
         },
@@ -103,11 +129,11 @@ class MessageWelcome extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.only(right: 100, left: 30),
       child: Text(
-        '¡Bienvenido a Eventify!',
+        'Unete a Eventify, ¡registrate!',
         style: TextStyle(
           fontSize: 30,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: Colors.black,
         ),
       ),
     );
@@ -122,19 +148,14 @@ class NameField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(30.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
       child: TextFormField(
         onChanged: onChanged,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          icon: const Icon(Icons.account_box_outlined, color: Colors.white),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(10),
-          ),
+        style: const TextStyle(color: Colors.black),
+        decoration: const InputDecoration(
+          icon: Icon(Icons.account_box_outlined, color: Colors.black),
           labelText: 'Nombre',
-          labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
-          suffixIconColor: Colors.white,
+          labelStyle: TextStyle(color: Colors.black, fontSize: 20),
         ),
       ),
     );
@@ -149,19 +170,14 @@ class EmailField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(30.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
       child: TextFormField(
         onChanged: onChanged,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          icon: const Icon(Icons.email_outlined, color: Colors.white),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(10),
-          ),
+        style: const TextStyle(color: Colors.black),
+        decoration: const InputDecoration(
+          icon: Icon(Icons.email_outlined, color: Colors.black),
           labelText: 'Correo electrónico',
-          labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
-          suffixIconColor: Colors.white,
+          labelStyle: TextStyle(color: Colors.black, fontSize: 20),
         ),
       ),
     );
@@ -176,20 +192,15 @@ class PasswordField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(30.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
       child: TextFormField(
         obscureText: true,
         onChanged: onChanged,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          icon: const Icon(Icons.password_outlined, color: Colors.white),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(10),
-          ),
+        style: const TextStyle(color: Colors.black),
+        decoration: const InputDecoration(
+          icon: Icon(Icons.password_outlined, color: Colors.black),
           labelText: 'Contraseña',
-          labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
-          suffixIconColor: Colors.white,
+          labelStyle: TextStyle(color: Colors.black, fontSize: 20),
         ),
       ),
     );
@@ -204,20 +215,16 @@ class ConfirmPasswordField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(30.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
       child: TextFormField(
         obscureText: true,
         onChanged: onChanged,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          icon: const Icon(Icons.lock_outline, color: Colors.white),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(10),
-          ),
+        style: const TextStyle(color: Colors.black),
+        decoration: const InputDecoration(
+          icon: Icon(Icons.lock_outline, color: Colors.black),
           labelText: 'Confirmar Contraseña',
-          labelStyle: const TextStyle(color: Colors.white, fontSize: 20),
-          suffixIconColor: Colors.white,
+          labelStyle: TextStyle(color: Colors.black, fontSize: 20),
+          suffixIconColor: Colors.black,
         ),
       ),
     );
@@ -243,11 +250,11 @@ class _RoleFieldState extends State<RoleField> {
         value: selectedRole,
         decoration: InputDecoration(
           labelText: 'Seleccione su rol',
-          labelStyle: const TextStyle(color: Colors.white),
+          labelStyle: const TextStyle(color: Colors.black),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.1),
+          fillColor: Colors.black.withOpacity(0.1),
           enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
+            borderSide: const BorderSide(color: Colors.black),
             borderRadius: BorderRadius.circular(10),
           ),
         ),
@@ -261,8 +268,8 @@ class _RoleFieldState extends State<RoleField> {
           });
           widget.onChanged(value);
         },
-        style: const TextStyle(color: Colors.white),
-        dropdownColor: Colors.blueGrey,
+        style: const TextStyle(color: Colors.black),
+        dropdownColor: const Color(0xff8c58b7),
         borderRadius: BorderRadius.circular(10),
         hint: const Text(
           "Seleccione su rol",
@@ -272,7 +279,6 @@ class _RoleFieldState extends State<RoleField> {
     );
   }
 }
-
 
 class RegisterButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -300,7 +306,7 @@ class LoginMessage extends StatelessWidget {
       children: [
         const Text(
           '¿Ya tienes una cuenta?',
-          style: TextStyle(fontSize: 18, color: Colors.white),
+          style: TextStyle(fontSize: 18, color: Colors.black),
         ),
         TextButton(
           onPressed: () {
@@ -314,7 +320,7 @@ class LoginMessage extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontStyle: FontStyle.italic,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
         ),

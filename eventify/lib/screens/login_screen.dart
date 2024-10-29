@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:eventify/services/authentication.dart';
 
-import '../middleware/role_middleware.dart';
-
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -19,31 +17,55 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
-          // double width = constraints.maxWidth;
-          // double height = constraints.maxHeight;
+          double width = constraints.maxWidth;
+          double height = constraints.maxHeight;
 
           return Container(
             height: double.infinity,
             width: double.infinity,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xff162340), Color(0xff415993)],
+                colors: [
+                  Color(0xff620091),
+                  Color(0xff8a0db7),
+                  Color(0xffb11adc)
+                ],
               ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: Stack(
+              // Cambiamos a Stack para superponer el nuevo contenedor
               children: [
-                const SizedBox(height: 25),
-                const MessageWelcome(),
-                EmailField(controller: emailController),
-                PasswordField(controller: passwordController),
-                const SizedBox(height: 10),
-                LoginButton(
-                    emailController: emailController,
-                    passwordController: passwordController),
-                const SizedBox(height: 10),
-                const RegisterMessage(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 300),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 40),
+                          const MessageWelcome(),
+                          const SizedBox(height: 40),
+                          EmailField(controller: emailController),
+                          PasswordField(controller: passwordController),
+                          const SizedBox(height: 40),
+                          LoginButton(
+                              emailController: emailController,
+                              passwordController: passwordController),
+                          const SizedBox(height: 10),
+                          const RegisterMessage(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           );
@@ -65,7 +87,7 @@ class MessageWelcome extends StatelessWidget {
         style: TextStyle(
           fontSize: 30,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: Colors.black,
         ),
       ),
     );
@@ -79,20 +101,14 @@ class EmailField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(30.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
       child: TextFormField(
-        controller: controller, // Asignar el controlador aquí
-        style:
-            const TextStyle(color: Colors.white), // Color del texto ingresado
-        decoration: InputDecoration(
-          icon: const Icon(Icons.email_outlined, color: Colors.white),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Colors.white, width: 5),
-          ),
+        controller: controller,
+        style: const TextStyle(color: Colors.black),
+        decoration: const InputDecoration(
+          icon: Icon(Icons.email_outlined, color: Colors.black),
           labelText: 'Correo electrónico',
-          labelStyle: const TextStyle(color: Colors.white, fontSize: 15),
-          suffixIconColor: Colors.white,
+          labelStyle: TextStyle(color: Colors.black, fontSize: 15),
         ),
       ),
     );
@@ -106,20 +122,15 @@ class PasswordField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(30.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
       child: TextFormField(
-        controller: controller, // Asignar el controlador aquí
+        controller: controller,
         obscureText: true,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          icon: const Icon(Icons.password_outlined, color: Colors.white),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Colors.white, width: 5),
-          ),
+        style: const TextStyle(color: Colors.black),
+        decoration: const InputDecoration(
+          icon: Icon(Icons.visibility_off, color: Colors.black),
           labelText: 'Contraseña',
-          labelStyle: const TextStyle(color: Colors.white, fontSize: 15),
-          suffixIconColor: Colors.white,
+          labelStyle: TextStyle(color: Colors.black, fontSize: 15),
         ),
       ),
     );
@@ -131,10 +142,10 @@ class LoginButton extends StatelessWidget {
   final TextEditingController passwordController;
 
   const LoginButton({
-    super.key,
+    Key? key,
     required this.emailController,
     required this.passwordController,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +162,12 @@ class LoginButton extends StatelessWidget {
           Map response = jsonDecode(res.body);
 
           if (res.statusCode == 200) {
-            RoleMiddleware.authorize(context, const UserListScreen());
+            // Puedes guardar el token aquí si lo necesitas
+            Navigator.push(
+              context,
+              //MaterialPageRoute(builder: (context) => const HomeScreen()),
+              MaterialPageRoute(builder: (context) => const UserListScreen()),
+            );
           } else {
             // Mostrar un mensaje de error basado en la respuesta
             String message = response['message'];
@@ -203,7 +219,7 @@ class RegisterMessage extends StatelessWidget {
       children: [
         const Text(
           '¿No tienes cuenta?',
-          style: TextStyle(fontSize: 18, color: Colors.white),
+          style: TextStyle(fontSize: 18, color: Colors.black),
         ),
         TextButton(
           onPressed: () {
@@ -216,8 +232,8 @@ class RegisterMessage extends StatelessWidget {
             'Regístrate aquí',
             style: TextStyle(
               fontSize: 20,
-              fontStyle: FontStyle.italic,
-              color: Colors.white,
+              fontStyle: FontStyle.normal,
+              color: Colors.black,
             ),
           ),
         ),

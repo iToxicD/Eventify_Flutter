@@ -8,26 +8,32 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pantalla de Inicio'),
-        backgroundColor: const Color(0xff415993), // Color del AppBar
+        title: const Text(
+          'Pantalla de Inicio',
+          style: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(15),
+                bottomRight: Radius.circular(15)),
+            gradient: LinearGradient(colors: [
+              Color(0xff620091),
+              Color(0xff8a0db7),
+              Color(0xffb11adc)
+            ]),
+          ),
+        ), // Color del AppBar
       ),
       drawer: const Menu(), // Añade el menú aquí
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xff162340), // Color superior
-              Color(0xff415993), // Color inferior
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        decoration: const BoxDecoration(color: Colors.white),
         child: const Center(
           child: Text(
-            'Bienvenido a la aplicación!',
+            '¡Bienvenido a la aplicación!',
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),

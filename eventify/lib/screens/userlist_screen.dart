@@ -40,15 +40,22 @@ class _UserListScreenState extends State<UserListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista de Usuarios', style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Lista de Usuarios',
+          style: TextStyle(color: Colors.white),
+        ),
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xff415993),
         shadowColor: Colors.grey[700],
         flexibleSpace: Container(
           decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(15),
+                bottomRight: Radius.circular(15)),
             gradient: LinearGradient(colors: [
-              Color(0xff162340),
-              Color(0xff415993),
+              Color(0xff620091),
+              Color(0xff8a0db7),
+              Color(0xffb11adc)
             ]),
           ),
         ),
@@ -71,25 +78,25 @@ class _UserListScreenState extends State<UserListScreen> {
                     children: [
                       user['actived'] == 0
                           ? SlidableAction(
-                        onPressed: (context) {
-                          _activateUser(user['id'].toString());
-                        },
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        icon: Icons.task_alt,
-                      )
+                              onPressed: (context) {
+                                _activateUser(user['id'].toString());
+                              },
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              icon: Icons.task_alt,
+                            )
                           : SlidableAction(
-                        onPressed: (context) {
-                          _deactivateUser(user['id'].toString());
-                        },
-                        backgroundColor: Colors.yellow.shade700,
-                        foregroundColor: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        icon: Icons.close,
-                      ),
+                              onPressed: (context) {
+                                _deactivateUser(user['id'].toString());
+                              },
+                              backgroundColor: Colors.yellow.shade700,
+                              foregroundColor: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              icon: Icons.close,
+                            ),
                       SlidableAction(
                         onPressed: (context) {
                           Navigator.push(
@@ -156,7 +163,8 @@ class _UserListScreenState extends State<UserListScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Confirmar eliminación"),
-          content: const Text("¿Estás seguro de que deseas eliminar este usuario?"),
+          content:
+              const Text("¿Estás seguro de que deseas eliminar este usuario?"),
           actions: [
             TextButton(
               onPressed: () {
@@ -176,7 +184,6 @@ class _UserListScreenState extends State<UserListScreen> {
       },
     );
   }
-
 
   void deleteUserHandler(String userId) async {
     var response = await UserService.deleteUser(userId);
@@ -220,5 +227,4 @@ class _UserListScreenState extends State<UserListScreen> {
       );
     }
   }
-
 }
