@@ -31,21 +31,30 @@ class LoginScreen extends StatelessWidget {
                 colors: [
                   Color(0xff620091),
                   Color(0xff8a0db7),
-                  Color(0xffb11adc)
+                  Color(0xffb11adc),
                 ],
               ),
             ),
             child: Stack(
-              // Cambiamos a Stack para superponer el nuevo contenedor
               children: [
+                // Añade el logo en la parte superior de la pantalla
+                Positioned(
+                  top: 50,
+                  left: width * 0.45 - 100, // Centramos horizontalmente
+                  child: Image.asset(
+                    'assets/images/logo_Eventify.png',
+                    width: 250,
+                    height: 250,
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 300),
                   child: Container(
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15),
                       ),
                     ),
                     height: double.infinity,
@@ -55,14 +64,14 @@ class LoginScreen extends StatelessWidget {
                         children: [
                           const SizedBox(height: 40),
                           const MessageWelcome(),
-                          const SizedBox(height: 40),
+                          const SizedBox(height: 20),
                           EmailField(controller: emailController),
                           PasswordField(controller: passwordController),
                           const SizedBox(height: 40),
                           LoginButton(
                               emailController: emailController,
                               passwordController: passwordController),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 30),
                           const RegisterMessage(),
                         ],
                       ),
@@ -84,11 +93,11 @@ class MessageWelcome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.only(right: 100, left: 30),
+      padding: EdgeInsets.only(right: 50, left: 50),
       child: Text(
         '¡Bienvenido a Eventify!',
         style: TextStyle(
-          fontSize: 30,
+          fontSize: 27,
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),
@@ -104,14 +113,14 @@ class EmailField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
       child: TextFormField(
         controller: controller,
         style: const TextStyle(color: Colors.black),
         decoration: const InputDecoration(
           icon: Icon(Icons.email_outlined, color: Colors.black),
           labelText: 'Correo electrónico',
-          labelStyle: TextStyle(color: Colors.black, fontSize: 15),
+          labelStyle: TextStyle(color: Colors.black, fontSize: 20),
         ),
       ),
     );
@@ -133,7 +142,7 @@ class PasswordField extends StatelessWidget {
         decoration: const InputDecoration(
           icon: Icon(Icons.visibility_off, color: Colors.black),
           labelText: 'Contraseña',
-          labelStyle: TextStyle(color: Colors.black, fontSize: 15),
+          labelStyle: TextStyle(color: Colors.black, fontSize: 20),
         ),
       ),
     );
@@ -153,6 +162,9 @@ class LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size(200, 80), // Aplica el tamaño mínimo
+      ),
       onPressed: () async {
         String email =
             emailController.text.trim(); // Obtener el texto del controlador
@@ -229,7 +241,7 @@ class RegisterMessage extends StatelessWidget {
           child: const Text(
             'Regístrate aquí',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 25,
               fontStyle: FontStyle.normal,
               color: Colors.black,
             ),

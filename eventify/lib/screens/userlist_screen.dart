@@ -45,17 +45,8 @@ class _UserListScreenState extends State<UserListScreen> {
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: const Color(0xff415993),
+        backgroundColor: const Color(0xff620091),
         shadowColor: Colors.grey[700],
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Color(0xff620091),
-              Color(0xff8a0db7),
-              Color(0xffb11adc)
-            ]),
-          ),
-        ),
       ),
       drawer: const Menu(),
       // Cambiar el fondo de la pantalla al color degradado del appBar
@@ -137,9 +128,9 @@ class _UserListScreenState extends State<UserListScreen> {
                     ),
                     child: Card(
                       color: Colors.white, // Fondo blanco para la tarjeta
-                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                      margin: const EdgeInsets.symmetric(vertical: 10.0),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: ListTile(
                         title: Text(
@@ -147,15 +138,16 @@ class _UserListScreenState extends State<UserListScreen> {
                           style: const TextStyle(
                             color: Colors.black, // Texto en negro
                             fontWeight: FontWeight.bold,
+                            fontSize: 20,
                           ),
                         ),
                         subtitle: Text(
                           user['email'] ?? 'Email no disponible',
-                          style: const TextStyle(color: Colors.black54),
+                          style: const TextStyle(color: Colors.black54, fontSize: 15),
                         ),
                         trailing: Text(
                           user['role'] ?? 'Rol no disponible',
-                          style: const TextStyle(color: Colors.black),
+                          style: const TextStyle(color: Colors.black, fontSize: 20),
                         ),
                       ),
                     ),

@@ -79,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               // Cambiamos a Stack para superponer el nuevo contenedor
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 150),
+                  padding: const EdgeInsets.only(top: 100),
                   child: Container(
                     decoration: const BoxDecoration(
                       color: Colors.white,
@@ -95,7 +95,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const SizedBox(height: 80),
+                          const SizedBox(height: 50),
                           const MessageWelcome(),
                           NameField(onChanged: (value) => name = value),
                           EmailField(onChanged: (value) => email = value),
@@ -103,9 +103,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ConfirmPasswordField(
                               onChanged: (value) => confirmPassword = value),
                           RoleField(onChanged: (value) => role = value ?? 'u'),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 20),
                           RegisterButton(onPressed: createAccount),
-                          const SizedBox(height: 1),
+                          const SizedBox(height: 20),
                           const LoginMessage(),
                         ],
                       ),
@@ -127,7 +127,7 @@ class MessageWelcome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 100, left: 30),
+      padding: const EdgeInsets.only(right: 50, left: 100),
       child: ShaderMask(
       shaderCallback: (bounds) => const LinearGradient(
         colors: [
@@ -139,7 +139,7 @@ class MessageWelcome extends StatelessWidget {
         end: Alignment.bottomRight,
       ).createShader(bounds),
       child: const Text(
-        'Unete a Eventify, ¡registrate!',
+        'Unete a Eventify ¡REGISTRATE!',
         style: TextStyle(
           fontSize: 30,
           fontWeight: FontWeight.bold,
@@ -166,7 +166,7 @@ class NameField extends StatelessWidget {
         decoration: const InputDecoration(
           icon: Icon(Icons.account_box_outlined, color: Colors.black),
           labelText: 'Nombre',
-          labelStyle: TextStyle(color: Colors.black, fontSize: 20),
+          labelStyle: TextStyle(color: Colors.black, fontSize: 22),
         ),
       ),
     );
@@ -188,7 +188,7 @@ class EmailField extends StatelessWidget {
         decoration: const InputDecoration(
           icon: Icon(Icons.email_outlined, color: Colors.black),
           labelText: 'Correo electrónico',
-          labelStyle: TextStyle(color: Colors.black, fontSize: 20),
+          labelStyle: TextStyle(color: Colors.black, fontSize: 22),
         ),
       ),
     );
@@ -211,7 +211,7 @@ class PasswordField extends StatelessWidget {
         decoration: const InputDecoration(
           icon: Icon(Icons.password_outlined, color: Colors.black),
           labelText: 'Contraseña',
-          labelStyle: TextStyle(color: Colors.black, fontSize: 20),
+          labelStyle: TextStyle(color: Colors.black, fontSize: 22),
         ),
       ),
     );
@@ -234,7 +234,7 @@ class ConfirmPasswordField extends StatelessWidget {
         decoration: const InputDecoration(
           icon: Icon(Icons.lock_outline, color: Colors.black),
           labelText: 'Confirmar Contraseña',
-          labelStyle: TextStyle(color: Colors.black, fontSize: 20),
+          labelStyle: TextStyle(color: Colors.black, fontSize: 22),
           suffixIconColor: Colors.black,
         ),
       ),
@@ -279,8 +279,8 @@ class _RoleFieldState extends State<RoleField> {
           });
           widget.onChanged(value);
         },
-        style: const TextStyle(color: Colors.black),
-        dropdownColor: const Color.fromARGB(255, 204, 118, 227),
+        style: const TextStyle(color: Colors.black, fontSize: 25),
+        dropdownColor: const Color.fromARGB(255, 223, 200, 251),
         borderRadius: BorderRadius.circular(10),
         hint: const Text(
           "Seleccione su rol",
@@ -299,10 +299,13 @@ class RegisterButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size(200, 80), // Aplica el tamaño mínimo
+      ),
       onPressed: onPressed,
       child: const Text(
         'Registrarse',
-        style: TextStyle(fontSize: 20, color: Colors.black),
+        style: TextStyle(fontSize: 25, color: Colors.black),
       ),
     );
   }
@@ -317,7 +320,7 @@ class LoginMessage extends StatelessWidget {
       children: [
         const Text(
           '¿Ya tienes una cuenta?',
-          style: TextStyle(fontSize: 18, color: Colors.black),
+          style: TextStyle(fontSize: 20, color: Colors.black),
         ),
         TextButton(
           onPressed: () {
@@ -329,7 +332,7 @@ class LoginMessage extends StatelessWidget {
           child: const Text(
             'Inicia sesión',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 25,
               fontStyle: FontStyle.italic,
               color: Colors.black,
             ),

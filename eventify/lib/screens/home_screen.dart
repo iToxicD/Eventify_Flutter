@@ -12,16 +12,9 @@ class HomeScreen extends StatelessWidget {
           'Pantalla de Inicio',
           style: TextStyle(color: Colors.white),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Color(0xff620091),
-              Color(0xff8a0db7),
-              Color(0xffb11adc)
-            ]),
-          ),
-        ), // Color del AppBar
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: const Color(0xff620091),
+        shadowColor: Colors.grey[700], // Color del AppBar
       ),
       drawer: const Menu(), // Añade el menú aquí
       body: Container(
