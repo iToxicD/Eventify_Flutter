@@ -24,12 +24,15 @@ class Menu extends StatelessWidget {
           return ListView(
             padding: EdgeInsets.zero,
             children: [
-              DrawerHeader(
+              const DrawerHeader(
                 decoration: BoxDecoration(
-                  color: const Color(0xff415993),
-                  borderRadius: BorderRadius.circular(0),
+                  gradient: LinearGradient(
+                    colors: [Color(0xff620091), Color(0xff8a0db7), Color(0xffb11adc)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
-                child: const Text(
+                child: Text(
                   'Menú',
                   style: TextStyle(color: Colors.white, fontSize: 24),
                 ),

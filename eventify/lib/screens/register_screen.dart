@@ -79,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               // Cambiamos a Stack para superponer el nuevo contenedor
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 300),
+                  padding: const EdgeInsets.only(top: 150),
                   child: Container(
                     decoration: const BoxDecoration(
                       color: Colors.white,
@@ -126,15 +126,26 @@ class MessageWelcome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.only(right: 100, left: 30),
-      child: Text(
+    return Padding(
+      padding: const EdgeInsets.only(right: 100, left: 30),
+      child: ShaderMask(
+      shaderCallback: (bounds) => const LinearGradient(
+        colors: [
+          Color(0xff620091),
+          Color(0xff8a0db7),
+          Color(0xffb11adc),
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(bounds),
+      child: const Text(
         'Unete a Eventify, ¡registrate!',
         style: TextStyle(
           fontSize: 30,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: Colors.white,
         ),
+      ),
       ),
     );
   }
@@ -269,7 +280,7 @@ class _RoleFieldState extends State<RoleField> {
           widget.onChanged(value);
         },
         style: const TextStyle(color: Colors.black),
-        dropdownColor: const Color(0xff8c58b7),
+        dropdownColor: const Color.fromARGB(255, 204, 118, 227),
         borderRadius: BorderRadius.circular(10),
         hint: const Text(
           "Seleccione su rol",

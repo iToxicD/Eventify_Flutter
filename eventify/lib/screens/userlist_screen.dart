@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:eventify/menu/menu.dart';
+import 'package:eventify/widgets/menu.dart';
 import 'package:eventify/screens/update_user_screen.dart';
 import 'package:eventify/services/user_service.dart';
 import 'package:flutter/material.dart';
@@ -49,9 +49,6 @@ class _UserListScreenState extends State<UserListScreen> {
         shadowColor: Colors.grey[700],
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(15),
-                bottomRight: Radius.circular(15)),
             gradient: LinearGradient(colors: [
               Color(0xff620091),
               Color(0xff8a0db7),
@@ -61,99 +58,111 @@ class _UserListScreenState extends State<UserListScreen> {
         ),
       ),
       drawer: const Menu(),
-      body: users.isEmpty
-          ? const Center(
-              child: CircularProgressIndicator(), // Cargando
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(8.0),
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                // Extraemos cada usuario de la lista
-                var user = users[index];
-                return Slidable(
-                  key: ValueKey(user['id']),
-                  startActionPane: ActionPane(
-                    motion: const ScrollMotion(),
-                    children: [
-                      user['actived'] == 0
-                          ? SlidableAction(
-                              onPressed: (context) {
-                                _activateUser(user['id'].toString());
-                              },
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              icon: Icons.task_alt,
-                            )
-                          : SlidableAction(
-                              onPressed: (context) {
-                                _deactivateUser(user['id'].toString());
-                              },
-                              backgroundColor: Colors.yellow.shade700,
-                              foregroundColor: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              icon: Icons.close,
-                            ),
-                      SlidableAction(
-                        onPressed: (context) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UpdateUserScreen(
-                                userId: user['id'].toString(),
-                                userName: user['name'],
+      // Cambiar el fondo de la pantalla al color degradado del appBar
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xff620091), Color(0xff8a0db7), Color(0xffb11adc)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: users.isEmpty
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ), // Cargando
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.all(8.0),
+                itemCount: users.length,
+                itemBuilder: (context, index) {
+                  // Extraemos cada usuario de la lista
+                  var user = users[index];
+                  return Slidable(
+                    key: ValueKey(user['id']),
+                    startActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      children: [
+                        user['actived'] == 0
+                            ? SlidableAction(
+                                onPressed: (context) {
+                                  _activateUser(user['id'].toString());
+                                },
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                icon: Icons.task_alt,
+                              )
+                            : SlidableAction(
+                                onPressed: (context) {
+                                  _deactivateUser(user['id'].toString());
+                                },
+                                backgroundColor: Colors.yellow.shade700,
+                                foregroundColor: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                icon: Icons.close,
                               ),
-                            ),
-                          );
-                        },
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        icon: Icons.edit,
-                      ),
-                      SlidableAction(
-                        onPressed: (context) {
-                          confirmDeleteUser(user['id'].toString());
-                        },
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        icon: Icons.delete,
-                      ),
-                    ],
-                  ),
-                  child: Card(
-                    color: const Color(0xff162340),
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                        SlidableAction(
+                          onPressed: (context) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UpdateUserScreen(
+                                  userId: user['id'].toString(),
+                                  userName: user['name'],
+                                ),
+                              ),
+                            );
+                          },
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          icon: Icons.edit,
+                        ),
+                        SlidableAction(
+                          onPressed: (context) {
+                            confirmDeleteUser(user['id'].toString());
+                          },
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          icon: Icons.delete,
+                        ),
+                      ],
                     ),
-                    child: ListTile(
-                      title: Text(
-                        user['name'] ?? 'Nombre no disponible',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                    child: Card(
+                      color: Colors.white, // Fondo blanco para la tarjeta
+                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ListTile(
+                        title: Text(
+                          user['name'] ?? 'Nombre no disponible',
+                          style: const TextStyle(
+                            color: Colors.black, // Texto en negro
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(
+                          user['email'] ?? 'Email no disponible',
+                          style: const TextStyle(color: Colors.black54),
+                        ),
+                        trailing: Text(
+                          user['role'] ?? 'Rol no disponible',
+                          style: const TextStyle(color: Colors.black),
                         ),
                       ),
-                      subtitle: Text(
-                        user['email'] ?? 'Email no disponible',
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                      trailing: Text(
-                        user['role'] ?? 'Rol no disponible',
-                        style: const TextStyle(color: Colors.white),
-                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
+      ),
     );
   }
 
@@ -206,7 +215,7 @@ class _UserListScreenState extends State<UserListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Usuario activado con éxito')),
       );
-      fetchUsers(); // Actualizar la lista de usuarios después de ctivar un usuario
+      fetchUsers(); // Actualizar la lista de usuarios después de activar un usuario
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${response.statusCode}')),

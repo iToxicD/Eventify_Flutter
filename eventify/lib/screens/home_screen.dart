@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eventify/menu/menu.dart'; // Importa el menú
+import 'package:eventify/widgets/menu.dart'; // Importa el menú
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -15,9 +15,6 @@ class HomeScreen extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.white),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(15),
-                bottomRight: Radius.circular(15)),
             gradient: LinearGradient(colors: [
               Color(0xff620091),
               Color(0xff8a0db7),
