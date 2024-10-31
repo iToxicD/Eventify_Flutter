@@ -8,7 +8,6 @@ class RoleMiddleware {
     // Obtenemos el rol del usuario autenticado desde SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userRole = prefs.getString('role');
-    print("User role from SharedPreferences: $userRole");
 
 
     // Si la pantalla es 'UserListScreen' y el usuario no es admin, redirigir a 'HomeScreen'

@@ -19,9 +19,6 @@ class Authentication {
       }),
     );
 
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-
     return response;
   }
 
@@ -47,7 +44,6 @@ class Authentication {
       await prefs.setString('role', role);
     }
 
-    print(res.body);
     return res;
   }
 

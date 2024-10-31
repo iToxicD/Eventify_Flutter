@@ -28,13 +28,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           jsonDecode(res.body); // Esto lanzará un error si no es un JSON válido
 
       if (res.statusCode == 200 && response['success']) {
-        // Imprimir los datos en la consola
-        print('Registro exitoso:');
-        print('Nombre: ${response['data']['name']}');
-        print('Email: ${response['data']['email']}');
-        print('Role: ${response['data']['role']}');
-        print('ID: ${response['data']['id']}');
-
         // Redirigir al Login
         Navigator.push(
             context,
@@ -49,7 +42,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       }
     } catch (e) {
-      print('Error: $e'); // Imprimir error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error en la solicitud: $e')),
       );

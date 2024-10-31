@@ -19,9 +19,6 @@ class UserService {
     var url = Uri.parse('$baseUrl/activate');
     var response = await http.post(url, headers: headers, body: body);
 
-    print("Activar Usuario - Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
-
     return response;
   }
 
@@ -39,9 +36,6 @@ class UserService {
     var url = Uri.parse('$baseUrl/deactivate');
     var response = await http.post(url, headers: headers, body: body);
 
-    print("Desactivar Usuario - Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
-
     return response;
   }
 
@@ -56,9 +50,6 @@ class UserService {
     };
 
     var response = await http.get(url, headers: headers);
-
-    print("Obtener Usuarios - Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
 
     return response;
   }
@@ -76,9 +67,6 @@ class UserService {
     var body = json.encode({"id": userId});
 
     var response = await http.post(url, headers: headers, body: body);
-    print(userId);
-    print("Eliminar Usuario - Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
 
     return response;
   }
@@ -99,11 +87,6 @@ class UserService {
     });
 
     var response = await http.post(url, headers: headers, body: body);
-    print(userId);
-    print(newName);
-    print(token);
-    print("Actualizar Usuario - Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
 
     return response;
   }

@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
           'Pantalla de Inicio',
           style: TextStyle(color: Colors.white),
         ),
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xff620091),
         shadowColor: Colors.grey[700], // Color del AppBar
       ),

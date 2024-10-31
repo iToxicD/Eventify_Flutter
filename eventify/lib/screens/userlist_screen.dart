@@ -29,10 +29,6 @@ class _UserListScreenState extends State<UserListScreen> {
       setState(() {
         users = jsonResponse['data']; // Almacenamos los usuarios en la lista
       });
-    } else {
-      // Manejo de errores en caso de respuesta fallida
-      print('Error: ${response.statusCode}');
-      print('Mensaje: ${response.body}');
     }
   }
 
@@ -44,7 +40,7 @@ class _UserListScreenState extends State<UserListScreen> {
           'Lista de Usuarios',
           style: TextStyle(color: Colors.white),
         ),
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xff620091),
         shadowColor: Colors.grey[700],
       ),

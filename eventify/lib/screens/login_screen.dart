@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:eventify/screens/register_screen.dart';
 import 'package:eventify/screens/userlist_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:eventify/services/authentication.dart';
 
@@ -154,10 +153,10 @@ class LoginButton extends StatelessWidget {
   final TextEditingController passwordController;
 
   const LoginButton({
-    Key? key,
+    super.key,
     required this.emailController,
     required this.passwordController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
