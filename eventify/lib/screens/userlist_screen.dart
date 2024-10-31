@@ -97,8 +97,8 @@ class _UserListScreenState extends State<UserListScreen> {
                                 icon: Icons.close,
                               ),
                         SlidableAction(
-                          onPressed: (context) {
-                            Navigator.push(
+                          onPressed: (context) async{
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => UpdateUserScreen(
@@ -107,6 +107,7 @@ class _UserListScreenState extends State<UserListScreen> {
                                 ),
                               ),
                             );
+                            fetchUsers();
                           },
                           backgroundColor: Colors.blue,
                           foregroundColor: Colors.white,

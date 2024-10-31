@@ -254,6 +254,13 @@ class _RoleFieldState extends State<RoleField> {
   String selectedRole = 'u'; // Rol preseleccionado
 
   @override
+  void initState() {
+    super.initState();
+    // Llamamos a onChanged al iniciar para asegurar que el valor predeterminado 'u' sea registrado en el estado principal
+    widget.onChanged(selectedRole);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
@@ -277,7 +284,7 @@ class _RoleFieldState extends State<RoleField> {
           setState(() {
             selectedRole = value!;
           });
-          widget.onChanged(value);
+          widget.onChanged(selectedRole);
         },
         style: const TextStyle(color: Colors.black, fontSize: 25),
         dropdownColor: const Color.fromARGB(255, 223, 200, 251),
@@ -290,6 +297,7 @@ class _RoleFieldState extends State<RoleField> {
     );
   }
 }
+
 
 class RegisterButton extends StatelessWidget {
   final VoidCallback onPressed;

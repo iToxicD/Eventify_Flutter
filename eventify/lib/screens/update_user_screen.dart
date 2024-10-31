@@ -18,16 +18,19 @@ class UpdateUserScreen extends StatefulWidget {
 class _UpdateUserScreenState extends State<UpdateUserScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
+  late TextEditingController _idController;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.userName);
+    _idController = TextEditingController(text: widget.userId);
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _idController.dispose();
     super.dispose();
   }
 
@@ -54,8 +57,11 @@ class _UpdateUserScreenState extends State<UpdateUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Actualizar Usuario'),
-        backgroundColor: const Color(0xff415993),
+        title: const Text(
+          'Actualizar Usuario',
+          style: TextStyle(fontSize: 25, color: Colors.white),
+        ),
+        backgroundColor: const Color(0xff620091),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -64,15 +70,24 @@ class _UpdateUserScreenState extends State<UpdateUserScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'ID de usuario: ${widget.userId}',
-                style: const TextStyle(fontSize: 16),
+              TextFormField(
+                controller: _idController,
+                readOnly: true,
+                decoration: const InputDecoration(
+                  labelText: 'ID de usuario',
+                  labelStyle: TextStyle(color: Colors.black, fontSize: 22),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(),
+                ),
+                style: const TextStyle(color: Colors.black),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 35), // Espacio entre ID y Nombre
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Nombre',
+                  labelStyle: TextStyle(color: Colors.black, fontSize: 22),
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
@@ -82,13 +97,17 @@ class _UpdateUserScreenState extends State<UpdateUserScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30), // Espacio entre el Nombre y el Botón
               ElevatedButton(
                 onPressed: _updateUser,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff415993),
+                  minimumSize: const Size(200, 80),
+                  backgroundColor: const Color(0xffc86ee1),
                 ),
-                child: const Text('Actualizar'),
+                child: const Text(
+                  'Actualizar',
+                  style: TextStyle(fontSize: 25, color: Colors.white),
+                ),
               ),
             ],
           ),
