@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:eventify/widgets/eventlist_buttons.dart';
 import 'package:eventify/widgets/menu.dart';
 import 'package:eventify/provider/event_provider.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +65,7 @@ class _EventListScreenState extends State<EventListScreen> {
         shadowColor: Colors.grey[700],
       ),
       drawer: const Menu(),
+      floatingActionButton: EventlistButtons(),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -74,23 +76,23 @@ class _EventListScreenState extends State<EventListScreen> {
         ),
         child: events.isEmpty
             ? const Center(
-          child: CircularProgressIndicator(
-            color: Colors.white,
-          ),
-        )
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              )
             : ListView.builder(
-          padding: const EdgeInsets.all(8.0),
-          itemCount: events.length,
-          itemBuilder: (context, index) {
-            var event = events[index];
-            return EventCategoryWidget(
-              category: event['category'],
-              imageUrl: event['image_url'] ?? '',
-              title: event['title'] ?? 'Título no disponible',
-              startTime: DateTime.parse(event['start_time']),
-            );
-          },
-        ),
+                padding: const EdgeInsets.all(8.0),
+                itemCount: events.length,
+                itemBuilder: (context, index) {
+                  var event = events[index];
+                  return EventCategoryWidget(
+                    category: event['category'],
+                    imageUrl: event['image_url'] ?? '',
+                    title: event['title'] ?? 'Título no disponible',
+                    startTime: DateTime.parse(event['start_time']),
+                  );
+                },
+              ),
       ),
     );
   }
