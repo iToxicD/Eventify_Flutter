@@ -1,4 +1,4 @@
-import 'package:eventify/services/authentication.dart';
+import 'package:eventify/provider/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -53,6 +53,13 @@ class Menu extends StatelessWidget {
                     Navigator.pushNamed(context, '/users');
                   },
                 ),
+              ListTile(
+                leading: const Icon(Icons.event),
+                title: const Text('Eventos'),
+                onTap: () {
+                  Navigator.pushNamed(context, '/events');
+                },
+              ),
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Logout'),

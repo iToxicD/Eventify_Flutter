@@ -3,7 +3,7 @@ import 'package:eventify/screens/register_screen.dart';
 import 'package:eventify/screens/userlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:eventify/services/authentication.dart';
+import 'package:eventify/provider/authentication.dart';
 
 import '../middleware/role_middleware.dart';
 

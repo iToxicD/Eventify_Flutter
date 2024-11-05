@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:eventify/widgets/menu.dart';
 import 'package:eventify/screens/update_user_screen.dart';
-import 'package:eventify/services/user_service.dart';
+import 'package:eventify/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -22,7 +22,7 @@ class _UserListScreenState extends State<UserListScreen> {
   }
 
   Future<void> fetchUsers() async {
-    var response = await UserService.getUsers();
+    var response = await UserProvider.getUsers();
     if (response.statusCode == 200) {
       // Si la solicitud es exitosa, extraemos los datos del JSON
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
@@ -184,7 +184,7 @@ class _UserListScreenState extends State<UserListScreen> {
   }
 
   void deleteUserHandler(String userId) async {
-    var response = await UserService.deleteUser(userId);
+    var response = await UserProvider.deleteUser(userId);
 
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -199,7 +199,7 @@ class _UserListScreenState extends State<UserListScreen> {
   }
 
   void _activateUser(String userId) async {
-    var response = await UserService.activateUser(userId);
+    var response = await UserProvider.activateUser(userId);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Usuario activado con éxito')),
@@ -213,7 +213,7 @@ class _UserListScreenState extends State<UserListScreen> {
   }
 
   void _deactivateUser(String userId) async {
-    var response = await UserService.deactivateUser(userId);
+    var response = await UserProvider.deactivateUser(userId);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Usuario desactivado con éxito')),

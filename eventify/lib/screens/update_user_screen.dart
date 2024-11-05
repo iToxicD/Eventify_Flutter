@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eventify/services/user_service.dart';
+import 'package:eventify/provider/user_provider.dart';
 
 class UpdateUserScreen extends StatefulWidget {
   final String userId;
@@ -36,7 +36,7 @@ class _UpdateUserScreenState extends State<UpdateUserScreen> {
 
   Future<void> _updateUser() async {
     if (_formKey.currentState!.validate()) {
-      var response = await UserService.updateUser(
+      var response = await UserProvider.updateUser(
         widget.userId,
         _nameController.text,
       );

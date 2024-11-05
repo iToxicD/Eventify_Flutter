@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:eventify/screens/login_screen.dart';
-import 'package:eventify/services/authentication.dart';
+import 'package:eventify/provider/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
