@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class EventlistButtons extends StatefulWidget {
-  const EventlistButtons({super.key});
+  final Function(String category) categories;
+
+  const EventlistButtons({super.key, required this.categories});
 
   @override
   _EventlistButtonsState createState() => _EventlistButtonsState();
@@ -22,17 +24,17 @@ class _EventlistButtonsState extends State<EventlistButtons> {
         SpeedDialChild(
           child: const Icon(Icons.music_note),
           label: 'Musica',
-          onTap: () => print('Categoria musica'),
+          onTap: () => widget.categories('Music'),
         ),
         SpeedDialChild(
           child: const Icon(Icons.sports_gymnastics),
           label: 'Deporte',
-          onTap: () => print('Categoria deporte'),
+          onTap: () => widget.categories('Sport'),
         ),
         SpeedDialChild(
           child: const Icon(Icons.phone_android),
           label: 'Tecnología',
-          onTap: () => print('Categoria tecnologia'),
+          onTap: () => widget.categories('Tech'),
         ),
       ],
     );
