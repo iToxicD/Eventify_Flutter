@@ -1,109 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-// Clase que representa un widget para eventos según su categoría
 class EventCategoryWidget extends StatelessWidget {
   final String category;
   final String imageUrl;
   final String title;
   final DateTime startTime;
 
-  const EventCategoryWidget({
-    Key? key,
+  EventCategoryWidget({
     required this.category,
     required this.imageUrl,
     required this.title,
     required this.startTime,
-  }) : super(key: key);
+  });
 
-  @override
-  Widget build(BuildContext context) {
-    switch (category) {
-      case 'Music':
-        return _buildMusicEventCard();
-      case 'Sport':
-        return _buildSportsEventCard();
-      case 'Tech':
-        return _buildTechEventCard();
+  Color _getBorderColor() {
+    switch (category.toLowerCase()) {
+      case 'music':
+        return const Color(0xFFFFD700); // Amarillo
+      case 'sport':
+        return const Color(0xFFFF4500); // Naranja
+      case 'tech':
+        return const Color(0xFF4CAF50); // Verde
       default:
-        return const SizedBox(); // Retornar vacío si no coincide con ninguna categoría
+        return Colors.grey; // Color por defecto
     }
   }
 
-  // Widget para eventos de Música
-  Widget _buildMusicEventCard() {
-    return Card(
-      borderOnForeground: true,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Color(0xFFFFD700), width: 5),
-        borderRadius: BorderRadius.circular(10),
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: _getBorderColor(), width: 3),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(imageUrl, fit: BoxFit.cover),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            // Imagen del evento con bordes redondeados
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15),
+              ),
+              child: Image.network(
+                imageUrl,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
-            Text(
-              DateFormat('yyyy-MM-dd – kk:mm').format(startTime),
-              style: const TextStyle(color: Colors.black54),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Widget para eventos de Deporte
-  Widget _buildSportsEventCard() {
-    return Card(
-      borderOnForeground: true,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Color(0xFFFF4500), width: 5),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Image.network(imageUrl, fit: BoxFit.cover),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            ),
-            Text(
-              DateFormat('yyyy-MM-dd – kk:mm').format(startTime),
-              style: const TextStyle(color: Colors.black54),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Widget para eventos de Tecnología
-  Widget _buildTechEventCard() {
-    return Card(
-      borderOnForeground: true,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Color(0xFF4CAF50), width: 5),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Image.network(imageUrl, fit: BoxFit.cover),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            ),
-            Text(
-              DateFormat('yyyy-MM-dd – kk:mm').format(startTime),
-              style: const TextStyle(color: Colors.black54),
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(15.0),
+              width: double.infinity, // Ocupa todo el ancho disponible
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Nombre del evento
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  // Fecha del evento
+                  Text(
+                    'Fecha: ${DateFormat('dd/MM/yyyy').format(startTime)}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
