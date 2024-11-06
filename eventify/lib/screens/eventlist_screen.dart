@@ -3,7 +3,6 @@ import 'package:eventify/widgets/eventlist_buttons.dart';
 import 'package:eventify/widgets/menu.dart';
 import 'package:eventify/provider/event_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../widgets/event_category_widget.dart';
 

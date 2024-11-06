@@ -7,7 +7,7 @@ class EventCategoryWidget extends StatelessWidget {
   final String title;
   final DateTime startTime;
 
-  EventCategoryWidget({
+  const EventCategoryWidget({super.key, 
     required this.category,
     required this.imageUrl,
     required this.title,
