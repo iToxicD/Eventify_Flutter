@@ -31,11 +31,11 @@ class _EventListScreenState extends State<EventListScreen> {
       // Si la solicitud es exitosa, extraemos los datos del JSON
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       events = jsonResponse['data'];
-      print("Eventos: $events");
+
       // Filtrar eventos que no han comenzado
       /*
       DateTime now = DateTime.now();
-      events = allEvents.where((event) {
+      events = events.where((event) {
         DateTime startTime = DateTime.parse(event['start_time']);
         return startTime.isAfter(now); // Solo incluir eventos futuros
       }).toList();*/

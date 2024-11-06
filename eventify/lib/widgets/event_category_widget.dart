@@ -15,12 +15,12 @@ class EventCategoryWidget extends StatelessWidget {
   });
 
   Color _getBorderColor() {
-    switch (category.toLowerCase()) {
-      case 'music':
+    switch (category) {
+      case 'Music':
         return const Color(0xFFFFD700); // Amarillo
-      case 'sport':
+      case 'Sport':
         return const Color(0xFFFF4500); // Naranja
-      case 'tech':
+      case 'Technology':
         return const Color(0xFF4CAF50); // Verde
       default:
         return Colors.grey; // Color por defecto
@@ -33,7 +33,7 @@ class EventCategoryWidget extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: _getBorderColor(), width: 3),
+        border: Border.all(color: _getBorderColor(), width: 5),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15),

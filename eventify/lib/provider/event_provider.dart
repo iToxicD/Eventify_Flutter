@@ -15,7 +15,24 @@ class EventProvider {
     };
 
     var response = await http.get(url, headers: headers);
-    print(response);
     return response;
   }
+
+  /*
+  static Future<http.Response> getCategories() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    var url = Uri.parse('$baseUrl/categories');
+    var headers = {
+      "Accept": "application/json",
+      "Authorization": "Bearer $token",
+    };
+
+    var response = await http.get(url, headers: headers);
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    print(jsonResponse['data']);
+    return response;
+  }
+  */
 }
