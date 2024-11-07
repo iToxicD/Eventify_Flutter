@@ -32,12 +32,11 @@ class _EventListScreenState extends State<EventListScreen> {
       events = jsonResponse['data'];
 
       // Filtrar eventos que no han comenzado
-      /*
       DateTime now = DateTime.now();
       events = events.where((event) {
         DateTime startTime = DateTime.parse(event['start_time']);
         return startTime.isAfter(now); // Solo incluir eventos futuros
-      }).toList();*/
+      }).toList();
 
       // Ordenar eventos de más nuevo a más antiguo
       events.sort((a, b) {
