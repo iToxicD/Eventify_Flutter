@@ -17,9 +17,7 @@ class EventProvider {
     };
 
     var response = await http.get(url, headers: headers);
-    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-    print(jsonResponse['data']);
-    getCategories();
+
     return response;
   }
 
@@ -34,8 +32,7 @@ class EventProvider {
     };
 
     var response = await http.get(url, headers: headers);
-    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-    print(jsonResponse['data']);
+
     return response;
   }
 }
