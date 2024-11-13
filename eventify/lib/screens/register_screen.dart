@@ -53,8 +53,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
-          double height = constraints.maxHeight;
-
           return Container(
             width: double.infinity,
             height: double.infinity,

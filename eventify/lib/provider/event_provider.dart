@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,10 +17,12 @@ class EventProvider {
     };
 
     var response = await http.get(url, headers: headers);
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    print(jsonResponse['data']);
+    getCategories();
     return response;
   }
 
-  /*
   static Future<http.Response> getCategories() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
@@ -34,5 +38,4 @@ class EventProvider {
     print(jsonResponse['data']);
     return response;
   }
-  */
 }

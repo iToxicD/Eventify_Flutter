@@ -42,7 +42,7 @@ class _EventListScreenState extends State<EventListScreen> {
       events.sort((a, b) {
         DateTime startTimeA = DateTime.parse(a['start_time']);
         DateTime startTimeB = DateTime.parse(b['start_time']);
-        return startTimeB.compareTo(startTimeA); // Orden descendente
+        return startTimeA.compareTo(startTimeB); // Orden ascendiente
       });
 
       setState(() {
@@ -63,8 +63,6 @@ class _EventListScreenState extends State<EventListScreen> {
         filterEvents =
             events.where((event) => event['category'] == category).toList();
       }
-      print("Categoria: $category");
-      print("Eventos filtrados: $filterEvents");
     });
   }
 

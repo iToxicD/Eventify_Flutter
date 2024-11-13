@@ -34,7 +34,7 @@ class _EventlistButtonsState extends State<EventlistButtons> {
         SpeedDialChild(
           child: const Icon(Icons.phone_android),
           label: 'Tecnología',
-          onTap: () => widget.categories('Tech'),
+          onTap: () => widget.categories('Technology'),
         ),
       ],
     );

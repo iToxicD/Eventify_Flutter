@@ -20,8 +20,6 @@ class LoginScreen extends StatelessWidget {
       body: LayoutBuilder(
         builder: (context, constraints) {
           double width = constraints.maxWidth;
-          double height = constraints.maxHeight;
-
           return Container(
             height: double.infinity,
             width: double.infinity,
