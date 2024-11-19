@@ -2,76 +2,82 @@ import 'package:eventify/provider/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Menu extends StatelessWidget {
-  const Menu({super.key});
+class Menu extends StatefulWidget {
+  final int currentIndex;
 
-  Future<bool> _isAdmin() async {
+  const Menu({super.key, required this.currentIndex});
+
+  @override
+  _MenuState createState() => _MenuState();
+}
+
+class _MenuState extends State<Menu> {
+  int _selectedIndex = 0;
+  bool _isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.currentIndex;
+    _checkAdminStatus();
+  }
+
+  Future<void> _checkAdminStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? role = prefs.getString('role');
-    return role == 'a'; // Compara el rol con el valor de admin
+    setState(() {
+      _isAdmin = role == 'a';
+    });
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/home');
+        break;
+      case 1:
+        if (_isAdmin) Navigator.pushNamed(context, '/users');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/events');
+        break;
+      case 3:
+        Authentication.logout();
+        Navigator.pushNamed(context, '/login');
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: FutureBuilder<bool>(
-        future: _isAdmin(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xff620091), Color(0xff8a0db7), Color(0xffb11adc)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                child: Text(
-                  'Menú',
-                  style: TextStyle(color: Colors.white, fontSize: 24),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.home),
-                title: const Text('Home'),
-                onTap: () {
-                  Navigator.pushNamed(context, '/home');
-                },
-              ),
-              // Mostrar "Users" solo si el usuario es administrador
-              if (snapshot.data == true)
-                ListTile(
-                  leading: const Icon(Icons.account_box),
-                  title: const Text('Users'),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/users');
-                  },
-                ),
-              ListTile(
-                leading: const Icon(Icons.event),
-                title: const Text('Eventos'),
-                onTap: () {
-                  Navigator.pushNamed(context, '/events');
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('Logout'),
-                onTap: () {
-                  Authentication.logout();
-                  Navigator.pushNamed(context, '/login');
-                },
-              ),
-            ],
-          );
-        },
-      ),
+    return BottomNavigationBar(
+      currentIndex: _selectedIndex,
+      onTap: _onItemTapped,
+      backgroundColor: Colors.white,
+      unselectedLabelStyle: const TextStyle(color: Colors.black),
+      items: [
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.home, color: Colors.black),
+          label: 'Inicio',
+        ),
+        if (_isAdmin)
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.account_box, color: Colors.black),
+            label: 'Usuarios',
+          ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.event, color: Colors.black),
+          label: 'Eventos',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.logout, color: Colors.black),
+          label: 'Logout',
+        ),
+      ],
     );
   }
 }

@@ -44,7 +44,6 @@ class _UserListScreenState extends State<UserListScreen> {
         backgroundColor: const Color(0xff620091),
         shadowColor: Colors.grey[700],
       ),
-      drawer: const Menu(),
       // Cambiar el fondo de la pantalla al color degradado del appBar
       body: Container(
         decoration: const BoxDecoration(
@@ -79,7 +78,8 @@ class _UserListScreenState extends State<UserListScreen> {
                                 backgroundColor: Colors.green,
                                 foregroundColor: Colors.white,
                                 borderRadius: BorderRadius.circular(10),
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 icon: Icons.task_alt,
                               )
                             : SlidableAction(
@@ -89,11 +89,12 @@ class _UserListScreenState extends State<UserListScreen> {
                                 backgroundColor: Colors.yellow.shade700,
                                 foregroundColor: Colors.white,
                                 borderRadius: BorderRadius.circular(10),
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 icon: Icons.close,
                               ),
                         SlidableAction(
-                          onPressed: (context) async{
+                          onPressed: (context) async {
                             await Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -140,11 +141,13 @@ class _UserListScreenState extends State<UserListScreen> {
                         ),
                         subtitle: Text(
                           user['email'] ?? 'Email no disponible',
-                          style: const TextStyle(color: Colors.black54, fontSize: 15),
+                          style: const TextStyle(
+                              color: Colors.black54, fontSize: 15),
                         ),
                         trailing: Text(
                           user['role'] ?? 'Rol no disponible',
-                          style: const TextStyle(color: Colors.black, fontSize: 20),
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 20),
                         ),
                       ),
                     ),
@@ -152,6 +155,7 @@ class _UserListScreenState extends State<UserListScreen> {
                 },
               ),
       ),
+      bottomNavigationBar: const Menu(currentIndex: 2),
     );
   }
 

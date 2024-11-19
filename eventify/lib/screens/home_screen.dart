@@ -16,7 +16,6 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: const Color(0xff620091),
         shadowColor: Colors.grey[700], // Color del AppBar
       ),
-      drawer: const Menu(), // Añade el menú aquí
       body: Container(
         decoration: const BoxDecoration(color: Colors.white),
         child: const Center(
@@ -30,6 +29,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+      bottomNavigationBar: Menu(currentIndex: 2),
     );
   }
 }

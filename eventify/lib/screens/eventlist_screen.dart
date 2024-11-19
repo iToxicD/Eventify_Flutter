@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:eventify/widgets/eventlist_buttons.dart';
 import 'package:eventify/widgets/menu.dart';
+// import 'package:eventify/widgets/menu.dart'; // Archivo adaptado del BottomNavigationBar
 import 'package:eventify/provider/event_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,19 +16,19 @@ class EventListScreen extends StatefulWidget {
 }
 
 class _EventListScreenState extends State<EventListScreen> {
-  List<dynamic> events = []; // Lista para almacenar los eventos
+  List<dynamic> events = [];
   List<dynamic> filterEvents = [];
   String role = '';
 
   @override
   void initState() {
     super.initState();
-    initializeData(); // Inicializar datos asincrónicos
+    initializeData();
   }
 
   Future<void> initializeData() async {
-    await fetchRole(); // Obtiene elrol
-    await fetchEvents(); // Obtiene los eventos
+    await fetchRole();
+    await fetchEvents();
   }
 
   Future<void> fetchRole() async {
@@ -42,26 +43,22 @@ class _EventListScreenState extends State<EventListScreen> {
     var response = await EventProvider.getEvents();
 
     if (response.statusCode == 200) {
-      // Si la solicitud es exitosa, extraemos los datos del JSON
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       events = jsonResponse['data'];
 
-      // Filtrar eventos que no han comenzado
       DateTime now = DateTime.now();
       events = events.where((event) {
         DateTime startTime = DateTime.parse(event['start_time']);
-        return startTime.isAfter(now); // Solo incluir eventos futuros
+        return startTime.isAfter(now);
       }).toList();
 
-      // Ordenar eventos de más nuevo a más antiguo
       events.sort((a, b) {
         DateTime startTimeA = DateTime.parse(a['start_time']);
         DateTime startTimeB = DateTime.parse(b['start_time']);
-        return startTimeB.compareTo(startTimeA); // Orden descendente
+        return startTimeB.compareTo(startTimeA);
       });
 
       setState(() {
-        // Almacenamos los eventos filtrados y ordenados en la lista
         filterEvents = List.from(events);
       });
     }
@@ -69,12 +66,9 @@ class _EventListScreenState extends State<EventListScreen> {
 
   void eventCategories(String category) {
     setState(() {
-      List.from(events);
       if (category.isEmpty) {
-        // Si una categoria esta vacia muestra todos los eventos
         filterEvents = List.from(events);
       } else {
-        // Filtra por categoria
         filterEvents =
             events.where((event) => event['category'] == category).toList();
       }
@@ -93,7 +87,6 @@ class _EventListScreenState extends State<EventListScreen> {
         backgroundColor: const Color(0xff620091),
         shadowColor: Colors.grey[700],
       ),
-      drawer: const Menu(),
       floatingActionButton: EventlistButtons(
         categories: eventCategories,
       ),
@@ -124,12 +117,10 @@ class _EventListScreenState extends State<EventListScreen> {
                         title: event['title'] ?? 'Título no disponible',
                         startTime: DateTime.parse(event['start_time']),
                       ),
-
-                      if (role == 'u') 
+                      if (role == 'u')
                         ElevatedButton(
                           onPressed: () {
                             // Lógica para registrarse al evento
-                            
                           },
                           child: const Text('Registrarse'),
                         ),
@@ -138,6 +129,7 @@ class _EventListScreenState extends State<EventListScreen> {
                 },
               ),
       ),
+      bottomNavigationBar: Menu(currentIndex: 2),
     );
   }
 }
