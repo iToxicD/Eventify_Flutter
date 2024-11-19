@@ -3,6 +3,7 @@ import 'package:eventify/widgets/eventlist_buttons.dart';
 import 'package:eventify/widgets/menu.dart';
 import 'package:eventify/provider/event_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/event_category_widget.dart';
 
@@ -16,11 +17,25 @@ class EventListScreen extends StatefulWidget {
 class _EventListScreenState extends State<EventListScreen> {
   List<dynamic> events = []; // Lista para almacenar los eventos
   List<dynamic> filterEvents = [];
+  String role = '';
 
   @override
   void initState() {
     super.initState();
-    fetchEvents(); // Llamada inicial para obtener los eventos
+    initializeData(); // Inicializar datos asincrónicos
+  }
+
+  Future<void> initializeData() async {
+    await fetchRole(); // Obtiene elrol
+    await fetchEvents(); // Obtiene los eventos
+  }
+
+  Future<void> fetchRole() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedRole = prefs.getString('role');
+    setState(() {
+      role = savedRole ?? '';
+    });
   }
 
   Future<void> fetchEvents() async {
@@ -42,7 +57,7 @@ class _EventListScreenState extends State<EventListScreen> {
       events.sort((a, b) {
         DateTime startTimeA = DateTime.parse(a['start_time']);
         DateTime startTimeB = DateTime.parse(b['start_time']);
-        return startTimeA.compareTo(startTimeB); // Orden ascendiente
+        return startTimeB.compareTo(startTimeA); // Orden descendente
       });
 
       setState(() {
@@ -101,11 +116,24 @@ class _EventListScreenState extends State<EventListScreen> {
                 itemCount: filterEvents.length,
                 itemBuilder: (context, index) {
                   var event = filterEvents[index];
-                  return EventCategoryWidget(
-                    category: event['category'],
-                    imageUrl: event['image_url'] ?? '',
-                    title: event['title'] ?? 'Título no disponible',
-                    startTime: DateTime.parse(event['start_time']),
+                  return Column(
+                    children: [
+                      EventCategoryWidget(
+                        category: event['category'],
+                        imageUrl: event['image_url'] ?? '',
+                        title: event['title'] ?? 'Título no disponible',
+                        startTime: DateTime.parse(event['start_time']),
+                      ),
+
+                      if (role == 'u') 
+                        ElevatedButton(
+                          onPressed: () {
+                            // Lógica para registrarse al evento
+                            
+                          },
+                          child: const Text('Registrarse'),
+                        ),
+                    ],
                   );
                 },
               ),
