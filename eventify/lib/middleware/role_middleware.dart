@@ -1,5 +1,5 @@
+import 'package:eventify/screens/eventlist_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:eventify/screens/home_screen.dart';
 import 'package:eventify/screens/userlist_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,11 +10,11 @@ class RoleMiddleware {
     String? userRole = prefs.getString('role');
 
 
-    // Si la pantalla es 'UserListScreen' y el usuario no es admin, redirigir a 'HomeScreen'
+    // Si la pantalla es 'UserListScreen' y el usuario no es admin, redirigir a 'EventlistScreen'
     if (screen is UserListScreen && userRole != 'a') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const EventListScreen()),
       );
     } else {
       // Si tiene permisos, navegar a la pantalla solicitada
