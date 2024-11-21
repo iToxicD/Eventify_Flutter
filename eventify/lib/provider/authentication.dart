@@ -37,11 +37,13 @@ class Authentication {
       Map<String, dynamic> responseData = jsonDecode(res.body);
       String token = responseData['data']['token'];
       String role = responseData['data']['role'];
+      int userId = responseData['data']['id'];
 
       // Guardar el token en shared_preferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', token);
       await prefs.setString('role', role);
+      await prefs.setString('user_id', userId.toString());
     }
 
     return res;
