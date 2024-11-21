@@ -79,6 +79,7 @@ class _EventListScreenState extends State<EventListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Lista de Eventos',
           style: TextStyle(color: Colors.white),
@@ -129,7 +130,7 @@ class _EventListScreenState extends State<EventListScreen> {
                 },
               ),
       ),
-      bottomNavigationBar: Menu(currentIndex: 2),
+      bottomNavigationBar: const Menu(currentIndex: 2),
     );
   }
 }
