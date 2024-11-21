@@ -1,4 +1,5 @@
 import 'package:eventify/provider/authentication.dart';
+import 'package:eventify/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,48 +37,71 @@ class _MenuState extends State<Menu> {
     });
 
     switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/home');
+      case 0: // Eventos
+        Authentication.logout();
+        Navigator.pushReplacementNamed(context, '/login');
         break;
       case 1:
-        if (_isAdmin) Navigator.pushNamed(context, '/users');
+        Navigator.pushReplacementNamed(context, '/events');
+        
         break;
       case 2:
-        Navigator.pushNamed(context, '/events');
+        if (_isAdmin) {
+          Navigator.pushReplacementNamed(context, '/informe');
+        }
         break;
       case 3:
-        Authentication.logout();
-        Navigator.pushNamed(context, '/login');
+        if (_isAdmin) {
+          Navigator.pushReplacementNamed(context, '/users');
+        }
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: _selectedIndex,
-      onTap: _onItemTapped,
-      backgroundColor: Colors.white,
-      unselectedLabelStyle: const TextStyle(color: Colors.black),
-      items: [
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.home, color: Colors.black),
-          label: 'Inicio',
-        ),
-        if (_isAdmin)
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.account_box, color: Colors.black),
-            label: 'Usuarios',
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 8,
+            offset: Offset(0, -4), // Sombra hacia arriba
           ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.event, color: Colors.black),
-          label: 'Eventos',
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.logout, color: Colors.black),
-          label: 'Logout',
-        ),
-      ],
+        ],
+      ),
+      child: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black,
+        selectedIconTheme: const IconThemeData(color: Colors.black),
+        unselectedIconTheme: const IconThemeData(color: Colors.black),
+        showUnselectedLabels: true,
+        items: [
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.logout),
+            label: 'Logout',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.event),
+            label: 'Eventos',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.edit_document),
+            label: 'Informe',
+          ),
+          if (_isAdmin) // Opción solo visible para administradores
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.account_box),
+              label: 'Usuarios',
+            ),
+
+        ],
+        
+      ),
     );
   }
 }
