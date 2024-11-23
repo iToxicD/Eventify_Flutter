@@ -1,5 +1,5 @@
 import 'package:eventify/provider/authentication.dart';
-import 'package:eventify/screens/login_screen.dart';
+// import 'package:eventify/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -46,9 +46,7 @@ class _MenuState extends State<Menu> {
         
         break;
       case 2:
-        if (_isAdmin) {
           Navigator.pushReplacementNamed(context, '/informe');
-        }
         break;
       case 3:
         if (_isAdmin) {
