@@ -44,6 +44,7 @@ class Authentication {
       await prefs.setString('auth_token', token);
       await prefs.setString('role', role);
       await prefs.setString('user_id', userId.toString());
+      await prefs.setString('email', email);
     }
 
     return res;
