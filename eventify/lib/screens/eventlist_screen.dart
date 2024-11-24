@@ -3,6 +3,7 @@ import 'package:eventify/widgets/eventlist_buttons.dart';
 import 'package:eventify/widgets/menu.dart';
 import 'package:eventify/provider/event_provider.dart';
 import 'package:eventify/widgets/event_category_widget.dart';
+import 'package:eventify/widgets/showDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,6 +39,7 @@ class _EventListScreenState extends State<EventListScreen> {
     });
   }
 
+  // Método para mostrar los eventos disponibles
   Future<void> fetchAvailableEvents() async {
     var response = await EventProvider.getEvents();
 
@@ -48,7 +50,8 @@ class _EventListScreenState extends State<EventListScreen> {
       // Muestra los eventos disponibles
       setState(() {
         allEvents = events.where((event) {
-          return !registeredEvents.any((regEvent) => regEvent['id'] == event['id']);
+          return !registeredEvents
+              .any((regEvent) => regEvent['id'] == event['id']);
         }).toList();
       });
     } else {
@@ -58,6 +61,7 @@ class _EventListScreenState extends State<EventListScreen> {
     }
   }
 
+  // Método para mostrar los eventos a los que el usuario se registra
   Future<void> fetchRegisteredEvents() async {
     var response = await EventProvider.getEventsByUser();
 
@@ -73,6 +77,7 @@ class _EventListScreenState extends State<EventListScreen> {
     }
   }
 
+  // Método para registrarse al evento
   Future<void> registerEvent(dynamic event) async {
     var response = await EventProvider.register(event['id']);
 
@@ -91,6 +96,7 @@ class _EventListScreenState extends State<EventListScreen> {
     }
   }
 
+  // Método para borrarse del evento
   Future<void> unregisterEvent(dynamic event) async {
     var response = await EventProvider.unregister(event['id']);
 
@@ -112,8 +118,8 @@ class _EventListScreenState extends State<EventListScreen> {
   void eventCategories(String category) {
     setState(() {
       allEvents = category.isEmpty
-        ? allEvents
-        : allEvents.where((event) => event['category'] == category).toList();
+          ? allEvents
+          : allEvents.where((event) => event['category'] == category).toList();
     });
   }
 
@@ -173,15 +179,38 @@ class _EventListScreenState extends State<EventListScreen> {
                               return Column(
                                 children: [
                                   EventCategoryWidget(
-                                    category: event['category'] ?? 'Categoría no disponible', // Valor predeterminado
-                                    imageUrl: event['image_url'] ?? '', // Valor predeterminado
-                                    title: event['title'] ?? 'Título no disponible', // Valor predeterminado
-                                    startTime: DateTime.parse(event['start_time']),
+                                    category: event['category'] ??
+                                        'Categoría no disponible', // Valor predeterminado
+                                    imageUrl: event['image_url'] ??
+                                        '', // Valor predeterminado
+                                    title: event['title'] ??
+                                        'Título no disponible', // Valor predeterminado
+                                    startTime:
+                                        DateTime.parse(event['start_time']),
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () => registerEvent(event),
-                                    child: const Text('Registrarse'),
-                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () => registerEvent(event),
+                                        child: const Text('Registrarse'),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder:
+                                                (BuildContext dialogContext) {
+                                              return showEventDialog(
+                                                  event: event);
+                                            },
+                                          );
+                                        },
+                                        child: const Text("Información"),
+                                      ),
+                                    ],
+                                  )
                                 ],
                               );
                             },
@@ -202,18 +231,40 @@ class _EventListScreenState extends State<EventListScreen> {
                               return Column(
                                 children: [
                                   EventCategoryWidget(
-                                    category: event['category'] ?? 'Categoría no disponible',
-                                    imageUrl: event['image_url'] ?? '', 
-                                    title: event['title'] ?? 'Título no disponible', 
-                                    startTime: DateTime.parse(event['start_time']),
+                                    category: event['category'] ??
+                                        'Categoría no disponible',
+                                    imageUrl: event['image_url'] ?? '',
+                                    title: event['title'] ??
+                                        'Título no disponible',
+                                    startTime:
+                                        DateTime.parse(event['start_time']),
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () => unregisterEvent(event),
-                                    child: const Text('Cancelar'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () => unregisterEvent(event),
+                                        child: const Text('Borrarse'),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder:
+                                                (BuildContext dialogContext) {
+                                              return showEventDialog(
+                                                  event: event);
+                                            },
+                                          );
+                                        },
+                                        child: const Text("Información"),
+                                      ),
+                                    ],
+                                  )
                                 ],
                               );
                             },

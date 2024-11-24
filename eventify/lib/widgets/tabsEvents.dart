@@ -6,7 +6,8 @@ class Tabsevents extends StatelessWidget {
   final String role;
   final Function(String) onCategoryFilter;
   final Function(dynamic) onRegister;
-  final Function(dynamic) onUnregister; // Nuevo callback para desregistrar eventos
+  final Function(dynamic)
+      onUnregister; // Nuevo callback para desregistrar eventos
 
   const Tabsevents({
     super.key,
@@ -86,10 +87,10 @@ class Tabsevents extends StatelessWidget {
                         trailing: ElevatedButton(
                           onPressed: () => onUnregister(event),
                           style: ElevatedButton.styleFrom(
-                             // Botón rojo para desregistrarse
-                          ),
+                              // Botón rojo para desregistrarse
+                              ),
                           child: const Text(
-                            'Desregistrarse',
+                            'Borrarse',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
