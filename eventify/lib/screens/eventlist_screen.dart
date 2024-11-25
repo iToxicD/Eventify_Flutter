@@ -39,7 +39,6 @@ class _EventListScreenState extends State<EventListScreen> {
     });
   }
 
-  // Método para mostrar los eventos disponibles
   Future<void> fetchAvailableEvents() async {
     var response = await EventProvider.getEvents();
 
@@ -47,7 +46,6 @@ class _EventListScreenState extends State<EventListScreen> {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       List<dynamic> events = jsonResponse['data'];
 
-      // Muestra los eventos disponibles
       setState(() {
         allEvents = events.where((event) {
           return !registeredEvents
@@ -61,7 +59,6 @@ class _EventListScreenState extends State<EventListScreen> {
     }
   }
 
-  // Método para mostrar los eventos a los que el usuario se registra
   Future<void> fetchRegisteredEvents() async {
     var response = await EventProvider.getEventsByUser();
 
@@ -70,6 +67,7 @@ class _EventListScreenState extends State<EventListScreen> {
       setState(() {
         registeredEvents = jsonResponse['data'];
       });
+      print('evento registrado: $registeredEvents');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error al cargar eventos registrados')),
@@ -77,7 +75,6 @@ class _EventListScreenState extends State<EventListScreen> {
     }
   }
 
-  // Método para registrarse al evento
   Future<void> registerEvent(dynamic event) async {
     var response = await EventProvider.register(event['id']);
 
@@ -96,14 +93,18 @@ class _EventListScreenState extends State<EventListScreen> {
     }
   }
 
-  // Método para borrarse del evento
   Future<void> unregisterEvent(dynamic event) async {
     var response = await EventProvider.unregister(event['id']);
 
     if (response.statusCode == 200) {
       setState(() {
         registeredEvents.remove(event);
-        allEvents.add(event); // Agregar el evento de nuevo a disponibles
+        allEvents.add(event);
+        allEvents.sort((a, b) {
+          DateTime dateA = DateTime.parse(a['start_time']);
+          DateTime dateB = DateTime.parse(b['start_time']);
+          return dateA.compareTo(dateB);
+        });
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Te has borrado del evento')),
@@ -163,7 +164,7 @@ class _EventListScreenState extends State<EventListScreen> {
               Expanded(
                 child: TabBarView(
                   children: [
-                    // Eventos disponibles para registrarse
+                    // Eventos disponibles
                     allEvents.isEmpty
                         ? const Center(
                             child: Text(
@@ -176,46 +177,27 @@ class _EventListScreenState extends State<EventListScreen> {
                             itemCount: allEvents.length,
                             itemBuilder: (context, index) {
                               var event = allEvents[index];
-                              return Column(
-                                children: [
-                                  EventCategoryWidget(
-                                    category: event['category'] ??
-                                        'Categoría no disponible', // Valor predeterminado
-                                    imageUrl: event['image_url'] ??
-                                        '', // Valor predeterminado
-                                    title: event['title'] ??
-                                        'Título no disponible', // Valor predeterminado
-                                    startTime:
-                                        DateTime.parse(event['start_time']),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      ElevatedButton(
-                                        onPressed: () => registerEvent(event),
-                                        child: const Text('Registrarse'),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          showDialog(
-                                            context: context,
-                                            builder:
-                                                (BuildContext dialogContext) {
-                                              return showEventDialog(
-                                                  event: event);
-                                            },
-                                          );
-                                        },
-                                        child: const Text("Información"),
-                                      ),
-                                    ],
-                                  )
-                                ],
+                              return GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => showEventDialog(
+                                      event: event,
+                                      registerEvents: () => registerEvent(event),
+                                    ),
+                                  );
+                                },
+                                child: EventCategoryWidget(
+                                  category:
+                                      event['category'] ?? 'Categoría no disponible',
+                                  imageUrl: event['image_url'] ?? '',
+                                  title: event['title'] ?? 'Título no disponible',
+                                  startTime: DateTime.parse(event['start_time']),
+                                ),
                               );
                             },
                           ),
-                    // Eventos a los que se registra el usuario
+                    // Eventos registrados
                     registeredEvents.isEmpty
                         ? const Center(
                             child: Text(
@@ -228,44 +210,24 @@ class _EventListScreenState extends State<EventListScreen> {
                             itemCount: registeredEvents.length,
                             itemBuilder: (context, index) {
                               var event = registeredEvents[index];
-                              return Column(
-                                children: [
-                                  EventCategoryWidget(
-                                    category: event['category'] ??
-                                        'Categoría no disponible',
-                                    imageUrl: event['image_url'] ?? '',
-                                    title: event['title'] ??
-                                        'Título no disponible',
-                                    startTime:
-                                        DateTime.parse(event['start_time']),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      ElevatedButton(
-                                        onPressed: () => unregisterEvent(event),
-                                        child: const Text('Borrarse'),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.white,
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          showDialog(
-                                            context: context,
-                                            builder:
-                                                (BuildContext dialogContext) {
-                                              return showEventDialog(
-                                                  event: event);
-                                            },
-                                          );
-                                        },
-                                        child: const Text("Información"),
-                                      ),
-                                    ],
-                                  )
-                                ],
+                              return GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => showEventDialog(
+                                      event: event,
+                                      unRegisterEvents: () =>
+                                          unregisterEvent(event),
+                                    ),
+                                  );
+                                },
+                                child: EventCategoryWidget(
+                                  category:
+                                      event['category'] ?? 'Categoría no disponible',
+                                  imageUrl: event['image_url'] ?? '',
+                                  title: event['title'] ?? 'Título no disponible',
+                                  startTime: DateTime.parse(event['start_time']),
+                                ),
                               );
                             },
                           ),
