@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:eventify/provider/pdf_generator.dart';
 import 'package:eventify/provider/event_provider.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 
 import '../widgets/menu.dart';
 
@@ -24,20 +26,12 @@ class _InformeScreenState extends State<InformeScreen> {
     _loadCategories();
   }
 
-  // Método para cargar las categorías de forma asíncrona
   Future<void> _loadCategories() async {
     final response = await EventProvider.getCategories();
-
     if (response.statusCode == 200) {
-      final List<dynamic> categories = json.decode(response.body)['data'];  // Extraemos la lista de categorías
-
+      final List<dynamic> categories = json.decode(response.body)['data'];
       setState(() {
-        // Mapear las categorías a una lista de strings (nombres de las categorías)
-        eventTypes = categories.map<String>((category) {
-          return category['name'] as String;  // Accede correctamente al campo 'name'
-        }).toList();
-
-        // Inicializa el mapa de tipos seleccionados con false
+        eventTypes = categories.map<String>((category) => category['name'] as String).toList();
         for (var type in eventTypes) {
           selectedTypes[type] = false;
         }
@@ -46,8 +40,6 @@ class _InformeScreenState extends State<InformeScreen> {
       throw Exception("Error al cargar las categorías: ${response.statusCode}");
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +51,6 @@ class _InformeScreenState extends State<InformeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Fecha de inicio
               TextField(
                 controller: startDateController,
                 decoration: const InputDecoration(labelText: "Fecha de inicio"),
@@ -67,7 +58,6 @@ class _InformeScreenState extends State<InformeScreen> {
                 onTap: () => _selectDate(context, startDateController),
               ),
               const SizedBox(height: 16),
-              // Fecha final
               TextField(
                 controller: endDateController,
                 decoration: const InputDecoration(labelText: "Fecha final"),
@@ -75,9 +65,7 @@ class _InformeScreenState extends State<InformeScreen> {
                 onTap: () => _selectDate(context, endDateController),
               ),
               const SizedBox(height: 16),
-              // Checkboxes para tipos de evento
               const Text("Tipos de evento:"),
-              // Si las categorías aún no están cargadas, muestra un cargador
               if (eventTypes.isEmpty)
                 const CircularProgressIndicator()
               else
@@ -95,7 +83,6 @@ class _InformeScreenState extends State<InformeScreen> {
                   }).toList(),
                 ),
               const SizedBox(height: 16),
-              // Botones
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -137,31 +124,22 @@ class _InformeScreenState extends State<InformeScreen> {
     required List<String> selectedTypes,
   }) async {
     final response = await EventProvider.getEvents();
-
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       final List<dynamic> eventosJson = jsonData["data"] is List ? jsonData["data"] : [];
 
-      // Filtrar eventos por fecha y tipo
       final filteredEvents = eventosJson.where((event) {
         if (event is Map<String, dynamic>) {
           final startTime = event["start_time"];
           if (startTime == null) return false;
 
-          // Intentar parsear la fecha del evento
           final eventDate = DateTime.tryParse(startTime);
-          if (eventDate == null) {
-            return false;
-          }
+          if (eventDate == null) return false;
 
-          // Parsear las fechas de inicio y fin
           final parsedStartDate = DateTime.parse(startDate);
           final parsedEndDate = DateTime.parse(endDate);
 
-          // Verificar si la fecha está en el rango
           final isDateInRange = eventDate.isAfter(parsedStartDate) && eventDate.isBefore(parsedEndDate);
-
-          // Verificar si el tipo de evento está en los tipos seleccionados
           final isTypeSelected = selectedTypes.contains(event["category"]);
 
           return isDateInRange && isTypeSelected;
@@ -169,7 +147,6 @@ class _InformeScreenState extends State<InformeScreen> {
         return false;
       }).toList();
 
-      // Convertir la lista filtrada al formato adecuado para el PDF
       return filteredEvents.map((event) {
         if (event is Map<String, dynamic>) {
           return {
@@ -230,17 +207,19 @@ class _InformeScreenState extends State<InformeScreen> {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final email = prefs.getString('email') ?? "";
+
       final pdfGenerator = PdfGenerator();
       final pdfFile = await pdfGenerator.generatePdf(events);
 
-      final emailSend = Email(
-        subject: 'Informe de eventos',
-        recipients: [email],
-        body: 'Adjunto se encuentra el informe de eventos solicitado.',
-        attachmentPaths: [pdfFile.path],
-      );
+      final smtpServer = gmail('eventifycorreo@gmail.com', 'sgmt xqba wwav mvmc');
+      final message = Message()
+        ..from = const Address('eventifycorreo@gmail.com', 'Eventify')
+        ..recipients.add(email)
+        ..subject = 'Informe de eventos'
+        ..text = 'Adjunto se encuentra el informe de eventos solicitado.'
+        ..attachments.add(FileAttachment(File(pdfFile.path)));
 
-      await FlutterEmailSender.send(emailSend);
+      await send(message, smtpServer);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("PDF enviado por correo")),
