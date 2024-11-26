@@ -36,20 +36,22 @@ class _MenuState extends State<Menu> {
     });
 
     List<String> routes = _isAdmin
-        ? ['/users', '/informe', '/events', '/login']
-        : ['/events', '/informe', '/login'];
+    ? ['/users', '/informe', '/events', '/login']
+    : ['/events', '/myEvents', '/informe', '/login'];
 
-    switch (index) {
-      case 0:
-      case 1:
-      case 2:
-        Navigator.pushReplacementNamed(context, routes[index]);
-        break;
-      case 3:
-        Authentication.logout();
-        Navigator.pushReplacementNamed(context, routes[index]);
-        break;
-    }
+switch (index) {
+  case 0:
+  case 1:
+  case 2:
+  case 3:
+    Navigator.pushReplacementNamed(context, routes[index]);
+    break;
+  case 4:
+    Authentication.logout();
+    Navigator.pushReplacementNamed(context, routes[index]);
+    break;
+}
+
 
   }
 
@@ -78,6 +80,10 @@ class _MenuState extends State<Menu> {
         const BottomNavigationBarItem(
           icon: Icon(Icons.event),
           label: 'Eventos',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.event),
+          label: 'Mis Eventos',
         ),
         const BottomNavigationBarItem(
           icon: Icon(Icons.edit_document),

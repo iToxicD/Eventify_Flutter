@@ -1,4 +1,5 @@
 import 'package:eventify/screens/eventlist_screen.dart';
+import 'package:eventify/screens/eventsRegistered.dart';
 import 'package:eventify/screens/home_screen.dart';
 import 'package:eventify/screens/informe_screen.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class AppRoutes {
   static const String register = '/register';
   static const String home = '/home';
   static const String listEvents = "/events";
+  static const String myEvents = "/myEvents";
   static const String informe = "/informe";
 
   static final routes = <String, WidgetBuilder>{
@@ -24,6 +26,7 @@ class AppRoutes {
       return const SizedBox.shrink(); // Este valor se utiliza para evitar devolver nulo.
     },
     listEvents: (context) => const EventListScreen(),
+    myEvents: (context) => const RegisteredEventsScreen(),
     informe: (context) => InformeScreen(),
   };
 }
