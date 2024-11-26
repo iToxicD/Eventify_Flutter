@@ -35,22 +35,59 @@ class _MenuState extends State<Menu> {
       _selectedIndex = index;
     });
 
+    List<String> routes = _isAdmin
+        ? ['/users', '/informe', '/events', '/login']
+        : ['/events', '/informe', '/login'];
+
     switch (index) {
-      case 0: // Eventos
-        Authentication.logout();
-        Navigator.pushReplacementNamed(context, '/login');
-        break;
+      case 0:
       case 1:
-        Navigator.pushReplacementNamed(context, '/events');
-        break;
       case 2:
-        Navigator.pushReplacementNamed(context, '/informe');
+        Navigator.pushReplacementNamed(context, routes[index]);
         break;
       case 3:
-        if (_isAdmin) {
-          Navigator.pushReplacementNamed(context, '/users');
-        }
+        Authentication.logout();
+        Navigator.pushReplacementNamed(context, routes[index]);
         break;
+    }
+
+  }
+
+  List<BottomNavigationBarItem> _buildNavigationItems() {
+    if (_isAdmin) {
+      return [
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.account_box),
+          label: 'Usuarios',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.edit_document),
+          label: 'Informe',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.event),
+          label: 'Eventos',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.logout),
+          label: 'Logout',
+        ),
+      ];
+    } else {
+      return [
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.event),
+          label: 'Eventos',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.edit_document),
+          label: 'Informe',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.logout),
+          label: 'Logout',
+        ),
+      ];
     }
   }
 
@@ -76,26 +113,7 @@ class _MenuState extends State<Menu> {
         selectedIconTheme: const IconThemeData(color: Colors.black),
         unselectedIconTheme: const IconThemeData(color: Colors.black),
         showUnselectedLabels: true,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.logout),
-            label: 'Logout',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            label: 'Eventos',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.edit_document),
-            label: 'Informe',
-          ),
-          if (_isAdmin) // Opción solo visible para administradores
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.account_box),
-              label: 'Usuarios',
-            ),
-
-        ],
+        items: _buildNavigationItems(),
         
       ),
     );
