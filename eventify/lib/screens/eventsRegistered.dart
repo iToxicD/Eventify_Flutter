@@ -72,13 +72,15 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
 
   void showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: const TextStyle(color: Colors.white))),
+      SnackBar(
+          content: Text(message, style: const TextStyle(color: Colors.white))),
     );
   }
 
   void showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: const TextStyle(color: Colors.white))),
+      SnackBar(
+          content: Text(message, style: const TextStyle(color: Colors.white))),
     );
   }
 
@@ -135,9 +137,9 @@ class _RegisteredEventsScreenState extends State<RegisteredEventsScreen> {
                 },
               ),
       ),
-      floatingActionButton: EventCategoryWidget(category: category, imageUrl: imageUrl, title: title, startTime: startTime),
-      bottomNavigationBar: const Menu(currentIndex: 1), // Asegúrate de ajustar el índice según el orden.
+
+      bottomNavigationBar: const Menu(
+          currentIndex: 1), // Asegúrate de ajustar el índice según el orden.
     );
-    
   }
 }

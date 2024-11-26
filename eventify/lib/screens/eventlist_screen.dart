@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:eventify/widgets/event_category_widget.dart';
+import 'package:eventify/widgets/eventlist_buttons.dart';
 import 'package:eventify/widgets/menu.dart';
 import 'package:eventify/widgets/showDialog.dart';
 import 'package:eventify/provider/event_provider.dart';
@@ -14,6 +15,9 @@ class EventListScreen extends StatefulWidget {
 
 class _EventListScreenState extends State<EventListScreen> {
   List<dynamic> availableEvents = [];
+  List<dynamic> events = [];
+  List<dynamic> filterEvents = [];
+  String allCategories = "all";
 
   @override
   void initState() {
@@ -40,6 +44,21 @@ class _EventListScreenState extends State<EventListScreen> {
     }
   }
 
+  // Filtra los eventos según la categoría seleccionada
+  void filterEvent(String category) {
+    setState(() {
+      allCategories = category;
+      if (category == 'All') {
+        filterEvents =
+            availableEvents; // Si se selecciona "All", mostramos todos los eventos
+      } else {
+        filterEvents = availableEvents.where((event) {
+          return event['category'] == category;
+        }).toList();
+      }
+    });
+  }
+
   Future<void> registerEvent(dynamic event) async {
     try {
       var response = await EventProvider.register(event['id']);
@@ -57,23 +76,32 @@ class _EventListScreenState extends State<EventListScreen> {
     }
   }
 
-  // Funciones para mostrar los SnackBars de error y éxito
   void showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: const TextStyle(color: Colors.white))),
+      SnackBar(
+          content: Text(message, style: const TextStyle(color: Colors.white))),
     );
   }
 
   void showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: const TextStyle(color: Colors.white))),
+      SnackBar(
+          content: Text(message, style: const TextStyle(color: Colors.white))),
     );
   }
 
-  // Filtro de eventos (podría ser un diálogo o algún otro tipo de interfaz)
-  void showFilterDialog() {
-    // Aquí puedes implementar la lógica para mostrar un diálogo de filtros.
-    // Por ahora, es un ejemplo de cómo abrir un filtro con un TextField.
+  void eventCategories(String category) {
+    setState(() {
+      List.from(events);
+      if (category.isEmpty) {
+        // Si una categoria esta vacia muestra todos los eventos
+        filterEvents = List.from(events);
+      } else {
+        // Filtra por categoria
+        filterEvents =
+            events.where((event) => event['category'] == category).toList();
+      }
+    });
   }
 
   @override
@@ -126,9 +154,12 @@ class _EventListScreenState extends State<EventListScreen> {
                       startTime: DateTime.parse(event['start_time']),
                     ),
                   );
-                },      
+                },
               ),
-            ),
+      ),
+      floatingActionButton: EventlistButtons(
+        categories: eventCategories,
+      ),
       bottomNavigationBar: const Menu(currentIndex: 0),
     );
   }
