@@ -15,9 +15,8 @@ class EventListScreen extends StatefulWidget {
 
 class _EventListScreenState extends State<EventListScreen> {
   List<dynamic> availableEvents = [];
-  List<dynamic> events = [];
   List<dynamic> filterEvents = [];
-  String allCategories = "all";
+  String selectedCategory = 'all';
 
   @override
   void initState() {
@@ -26,46 +25,66 @@ class _EventListScreenState extends State<EventListScreen> {
   }
 
   Future<void> fetchAvailableEvents() async {
-    try {
-      var response = await EventProvider.getEvents();
+  try {
+    // Llama a los dos endpoints
+    var response = await EventProvider.getEvents();
+    var responseRegistered = await EventProvider.getEventsByUser();
 
-      if (response.statusCode == 200) {
-        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-        List<dynamic> events = jsonResponse['data'];
+    if (response.statusCode == 200 && responseRegistered.statusCode == 200) {
+      // Decodifica los datos de los eventos disponibles
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      List<dynamic> events = jsonResponse['data'];
 
-        setState(() {
-          availableEvents = events;
-        });
-      } else {
-        showErrorSnackBar('Error al cargar eventos disponibles');
-      }
-    } catch (e) {
-      showErrorSnackBar('Error de conexión');
+      // Decodifica los datos de los eventos registrados por el usuario
+      Map<String, dynamic> jsonResponseRegistered = jsonDecode(responseRegistered.body);
+      List<dynamic> registeredEvents = jsonResponseRegistered['data'];
+
+      // Obtén las IDs de los eventos registrados
+      List<dynamic> registeredEventIds = registeredEvents.map((e) => e['id']).toList();
+
+      // Filtra los eventos disponibles, excluyendo los que tienen ID en registeredEventIds
+      List<dynamic> filteredEvents = events.where((event) {
+        return !registeredEventIds.contains(event['id']);
+      }).toList();
+
+      // Actualiza el estado con los eventos filtrados
+      setState(() {
+        availableEvents = filteredEvents; // Solo los eventos no registrados
+        filterEvents = List.from(availableEvents); // Inicialmente, muestra todos
+      });
+    } else {
+      showErrorSnackBar('Error al cargar eventos disponibles o registrados');
     }
+  } catch (e) {
+    showErrorSnackBar('Error de conexión');
   }
+}
 
-  // Filtra los eventos según la categoría seleccionada
+
+  // Función para filtrar eventos por categoría
   void filterEvent(String category) {
     setState(() {
-      allCategories = category;
-      if (category == 'All') {
-        filterEvents =
-            availableEvents; // Si se selecciona "All", mostramos todos los eventos
+      selectedCategory = category; // Actualiza la categoría seleccionada
+      if (category == 'all') {
+        filterEvents = List.from(availableEvents); // Mostrar todos los eventos
       } else {
-        filterEvents = availableEvents.where((event) {
-          return event['category'] == category;
-        }).toList();
+        filterEvents = availableEvents
+            .where((event) => event['category'] == category).toSet()
+            .toList(); // Filtra por categoría
       }
     });
   }
 
+  // Registro en un evento
   Future<void> registerEvent(dynamic event) async {
     try {
       var response = await EventProvider.register(event['id']);
 
       if (response.statusCode == 200) {
         setState(() {
-          availableEvents.remove(event);
+          // Quita el evento registrado de ambas listas
+          availableEvents.removeWhere((e) => e['id'] == event['id']);
+          filterEvents.removeWhere((e) => e['id'] == event['id']);
         });
         showSuccessSnackBar('Te has registrado al evento');
       } else {
@@ -79,29 +98,17 @@ class _EventListScreenState extends State<EventListScreen> {
   void showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text(message, style: const TextStyle(color: Colors.white))),
+        content: Text(message, style: const TextStyle(color: Colors.white)),
+      ),
     );
   }
 
   void showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text(message, style: const TextStyle(color: Colors.white))),
+        content: Text(message, style: const TextStyle(color: Colors.white)),
+      ),
     );
-  }
-
-  void eventCategories(String category) {
-    setState(() {
-      List.from(events);
-      if (category.isEmpty) {
-        // Si una categoria esta vacia muestra todos los eventos
-        filterEvents = List.from(events);
-      } else {
-        // Filtra por categoria
-        filterEvents =
-            events.where((event) => event['category'] == category).toList();
-      }
-    });
   }
 
   @override
@@ -125,7 +132,7 @@ class _EventListScreenState extends State<EventListScreen> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: availableEvents.isEmpty
+        child: filterEvents.isEmpty
             ? const Center(
                 child: Text(
                   'No hay eventos disponibles',
@@ -133,34 +140,35 @@ class _EventListScreenState extends State<EventListScreen> {
                 ),
               )
             : ListView.builder(
-                padding: const EdgeInsets.all(8.0),
-                itemCount: availableEvents.length,
-                itemBuilder: (context, index) {
-                  var event = availableEvents[index];
-                  return GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => showEventDialog(
-                          event: event,
-                          registerEvents: () => registerEvent(event),
-                        ),
-                      );
-                    },
-                    child: EventCategoryWidget(
-                      category: event['category'] ?? 'Categoría no disponible',
-                      imageUrl: event['image_url'] ?? '',
-                      title: event['title'] ?? 'Título no disponible',
-                      startTime: DateTime.parse(event['start_time']),
-                    ),
-                  );
-                },
+              padding: const EdgeInsets.all(8.0),
+              itemCount: filterEvents.length,
+              itemBuilder: (context, index) {
+                final event = filterEvents[index];
+                return GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => showEventDialog(
+                        event: event,
+                        registerEvents: () => registerEvent(event),
+                      ),
+                    );
+                  },
+                  child: EventCategoryWidget(
+                    category: event['category'] ?? 'Categoría no disponible',
+                    imageUrl: event['image_url'] ?? '',
+                    title: event['title'] ?? 'Título no disponible',
+                    startTime: DateTime.parse(event['start_time']),
+                  ),
+                );
+              },
               ),
       ),
       floatingActionButton: EventlistButtons(
-        categories: eventCategories,
+        categories: filterEvent, // Asocia el botón flotante al filtro
       ),
       bottomNavigationBar: const Menu(currentIndex: 0),
     );
   }
 }
+
