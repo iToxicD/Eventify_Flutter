@@ -1,5 +1,5 @@
 import 'package:eventify/screens/eventlist_screen.dart';
-import 'package:eventify/screens/eventsRegistered.dart';
+import 'package:eventify/screens/eventsRegistered_screen.dart';
 import 'package:eventify/screens/home_screen.dart';
 import 'package:eventify/screens/informe_screen.dart';
 import 'package:flutter/material.dart';

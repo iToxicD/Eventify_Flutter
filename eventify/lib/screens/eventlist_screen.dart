@@ -25,40 +25,50 @@ class _EventListScreenState extends State<EventListScreen> {
   }
 
   Future<void> fetchAvailableEvents() async {
-  try {
-    // Llama a los dos endpoints
-    var response = await EventProvider.getEvents();
-    var responseRegistered = await EventProvider.getEventsByUser();
+    try {
+      var response = await EventProvider.getEvents();
+      var responseRegistered = await EventProvider.getEventsByUser();
 
-    if (response.statusCode == 200 && responseRegistered.statusCode == 200) {
-      // Decodifica los datos de los eventos disponibles
-      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-      List<dynamic> events = jsonResponse['data'];
+      if (response.statusCode == 200 && responseRegistered.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        List<dynamic> events = jsonResponse['data'];
 
-      // Decodifica los datos de los eventos registrados por el usuario
-      Map<String, dynamic> jsonResponseRegistered = jsonDecode(responseRegistered.body);
-      List<dynamic> registeredEvents = jsonResponseRegistered['data'];
+        Map<String, dynamic> jsonResponseRegistered = jsonDecode(responseRegistered.body);
+        List<dynamic> registeredEvents = jsonResponseRegistered['data'];
 
-      // Obtén las IDs de los eventos registrados
-      List<dynamic> registeredEventIds = registeredEvents.map((e) => e['id']).toList();
+        List<dynamic> registeredEventIds = registeredEvents.map((e) => e['id']).toList();
 
-      // Filtra los eventos disponibles, excluyendo los que tienen ID en registeredEventIds
-      List<dynamic> filteredEvents = events.where((event) {
-        return !registeredEventIds.contains(event['id']);
-      }).toList();
+        DateTime now = DateTime.now();
+        DateTime tomorrow = DateTime(now.year, now.month, now.day).add(Duration(days: 2));
 
-      // Actualiza el estado con los eventos filtrados
-      setState(() {
-        availableEvents = filteredEvents; // Solo los eventos no registrados
-        filterEvents = List.from(availableEvents); // Inicialmente, muestra todos
-      });
-    } else {
-      showErrorSnackBar('Error al cargar eventos disponibles o registrados');
+        // Filtramos para obtener los eventos que empiezan a partir de mañana y a los que ademas no estamos registrados
+        List<dynamic> filteredEvents = events.where((event) {
+          DateTime? eventStartTime = DateTime.tryParse(event['start_time'] ?? '');
+          bool isUpcoming = eventStartTime != null && eventStartTime.isAfter(tomorrow.subtract(Duration(days: 1)));
+          bool isNotRegistered = !registeredEventIds.contains(event['id']);
+          return isUpcoming && isNotRegistered;
+        }).toList();
+
+        // Orden ascendente por fecha
+        filteredEvents.sort((a, b) {
+          DateTime startA = DateTime.parse(a['start_time']);
+          DateTime startB = DateTime.parse(b['start_time']);
+          return startA.compareTo(startB);
+        });
+
+        setState(() {
+          availableEvents = filteredEvents; // Solo los eventos no registrados y futuros
+          filterEvents = List.from(availableEvents); // Inicialmente, muestra todos
+        });
+      } else {
+        showErrorSnackBar('Error al cargar eventos disponibles o registrados');
+      }
+    } catch (e) {
+      showErrorSnackBar('Error de conexión');
     }
-  } catch (e) {
-    showErrorSnackBar('Error de conexión');
   }
-}
+
+
 
 
   // Función para filtrar eventos por categoría

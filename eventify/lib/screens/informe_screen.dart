@@ -62,7 +62,16 @@ class _InformeScreenState extends State<InformeScreen> {
                 controller: endDateController,
                 decoration: const InputDecoration(labelText: "Fecha final"),
                 readOnly: true,
-                onTap: () => _selectDate(context, endDateController),
+                onTap: () {
+                  if (startDateController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Por favor selecciona primero la fecha de inicio")),
+                    );
+                    return;
+                  }
+                  final startDate = DateTime.parse(startDateController.text);
+                  _selectDate(context, endDateController, minDate: startDate);
+                },
               ),
               const SizedBox(height: 16),
               const Text("Tipos de evento:"),
@@ -104,11 +113,11 @@ class _InformeScreenState extends State<InformeScreen> {
     );
   }
 
-  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(BuildContext context, TextEditingController controller, {DateTime? minDate}) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      initialDate: minDate ?? DateTime.now(),
+      firstDate: minDate ?? DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (picked != null) {
