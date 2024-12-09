@@ -174,7 +174,7 @@ class LoginButton extends StatelessWidget {
           Map response = jsonDecode(res.body);
 
           if (res.statusCode == 200) {
-            RoleMiddleware.authorize(context, const UserListScreen());
+            RoleMiddleware.initialPage(context, const UserListScreen());
           } else {
             // Mostrar un mensaje de error basado en la respuesta
             String message = response['message'];

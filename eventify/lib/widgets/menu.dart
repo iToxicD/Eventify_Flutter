@@ -13,20 +13,19 @@ class Menu extends StatefulWidget {
 
 class _MenuState extends State<Menu> {
   int _selectedIndex = 0;
-  bool _isAdmin = false;
+  String _role = 'u'; // Por defecto 'usuario'
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.currentIndex;
-    _checkAdminStatus();
+    _loadUserRole();
   }
 
-  Future<void> _checkAdminStatus() async {
+  Future<void> _loadUserRole() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? role = prefs.getString('role');
     setState(() {
-      _isAdmin = role == 'a';
+      _role = prefs.getString('role') ?? 'u';
     });
   }
 
@@ -35,28 +34,27 @@ class _MenuState extends State<Menu> {
       _selectedIndex = index;
     });
 
-    List<String> routes = _isAdmin
-    ? ['/users', '/informe', '/events', '/login']
-    : ['/events', '/myEvents', '/informe', '/login'];
+    // Define rutas según el rol
+    List<String> routes;
+    if (_role == 'a') {
+      routes = ['/users', '/informe', '/events', '/login'];
+    } else if (_role == 'o') {
+      routes = ['/events', '/graphs', '/login'];
+    } else {
+      routes = ['/events', '/myEvents', '/informe', '/login'];
+    }
 
-switch (index) {
-  case 0:
-  case 1:
-  case 2:
-  case 3:
-    Navigator.pushReplacementNamed(context, routes[index]);
-    break;
-  case 4:
-    Authentication.logout();
-    Navigator.pushReplacementNamed(context, routes[index]);
-    break;
-}
-
-
+    // Navegación
+    if (index < routes.length) {
+      Navigator.pushReplacementNamed(context, routes[index]);
+    } else {
+      Authentication.logout();
+      Navigator.pushReplacementNamed(context, '/login');
+    }
   }
 
   List<BottomNavigationBarItem> _buildNavigationItems() {
-    if (_isAdmin) {
+    if (_role == 'a') {
       return [
         const BottomNavigationBarItem(
           icon: Icon(Icons.account_box),
@@ -69,6 +67,21 @@ switch (index) {
         const BottomNavigationBarItem(
           icon: Icon(Icons.event),
           label: 'Eventos',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.logout),
+          label: 'Logout',
+        ),
+      ];
+    } else if (_role == 'o') {
+      return [
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.event),
+          label: 'Eventos',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.bar_chart),
+          label: 'Gráficas',
         ),
         const BottomNavigationBarItem(
           icon: Icon(Icons.logout),
@@ -106,7 +119,7 @@ switch (index) {
           BoxShadow(
             color: Colors.black26,
             blurRadius: 8,
-            offset: Offset(0, -4), // Sombra hacia arriba
+            offset: Offset(0, -4),
           ),
         ],
       ),
@@ -120,7 +133,6 @@ switch (index) {
         unselectedIconTheme: const IconThemeData(color: Colors.black),
         showUnselectedLabels: true,
         items: _buildNavigationItems(),
-        
       ),
     );
   }

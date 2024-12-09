@@ -1,4 +1,4 @@
-import 'package:eventify/screens/eventlist_screen.dart';
+import 'package:eventify/screens/eventlist_organizer_screen.dart';
 import 'package:eventify/screens/eventsRegistered_screen.dart';
 import 'package:eventify/screens/home_screen.dart';
 import 'package:eventify/screens/informe_screen.dart';
@@ -23,9 +23,12 @@ class AppRoutes {
     register: (context) => const RegisterScreen(),
     listUser: (context) {
       RoleMiddleware.authorize(context, const UserListScreen());
-      return const SizedBox.shrink(); // Este valor se utiliza para evitar devolver nulo.
+      return const SizedBox.shrink();
     },
-    listEvents: (context) => const EventListScreen(),
+    listEvents: (context){
+      RoleMiddleware.authorizeOrganizer(context, const EventListOrganizerScreen());
+      return const SizedBox.shrink();
+    },
     myEvents: (context) => const RegisteredEventsScreen(),
     informe: (context) => InformeScreen(),
   };

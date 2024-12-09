@@ -84,6 +84,22 @@ class EventProvider {
     return response;
   }
 
+  static Future<http.Response> getEventsByOrganizer() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+    String? userId = prefs.getString('user_id');
+
+    var url = Uri.parse('$baseUrl/eventsByOrganizer?id=$userId');
+    var headers = {
+      "Accept": "application/json",
+      "Authorization": "Bearer $token",
+    };
+
+    var response = await http.post(url, headers: headers);
+
+    return response;
+  }
+
   static Future<http.Response> getCategories() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
