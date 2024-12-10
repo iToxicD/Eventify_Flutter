@@ -47,6 +47,7 @@ dependencies:
   flutter_email_sender: ^6.0.3
   permission_handler: ^10.0.0
   mailer: ^6.0.0
+  image_picker: ^0.8.7+5
 
 dev_dependencies:
   flutter_test:

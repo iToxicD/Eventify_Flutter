@@ -100,6 +100,53 @@ class EventProvider {
     return response;
   }
 
+  static Future<http.Response> createEvent(Map<String, dynamic> eventData) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+    String? userId = prefs.getString('user_id');
+
+    // Añadimos el organizer_id a los datos del evento
+    eventData['organizer_id'] = userId;
+
+    var url = Uri.parse('$baseUrl/events');
+    print(eventData);
+    var headers = {
+      "Accept": "application/json",
+      "Authorization": "Bearer $token",
+      "Content-Type": "application/json",
+    };
+
+    var response = await http.post(url, headers: headers, body: jsonEncode(eventData));
+
+    print('Response statusCode: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    return response;
+  }
+
+
+
+  static Future<http.Response> deleteEvent(int id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    var url = Uri.parse('$baseUrl/eventDelete');
+    var headers = {
+      "Accept": "application/json",
+      "Authorization": "Bearer $token",
+    };
+
+    var body = {
+      "id": id.toString(),
+    };
+
+    var response = await http.post(url, headers: headers, body: body);
+    print('Response statusCode: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    return response;
+  }
+
+
   static Future<http.Response> getCategories() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
