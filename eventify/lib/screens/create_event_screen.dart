@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:eventify/provider/event_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 
@@ -21,8 +18,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   final TextEditingController endTimeController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
-  final ImagePicker _picker = ImagePicker();
-  XFile? selectedImage;
+  final TextEditingController imageUrlController = TextEditingController();
   String? selectedCategory;
   List<Map<String, dynamic>> categories = [];
 
@@ -71,15 +67,6 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        selectedImage = image;
-      });
-    }
-  }
-
   void _createEvent() async {
     if (_formKey.currentState!.validate()) {
       if (startTimeController.text.isEmpty) {
@@ -118,7 +105,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         'end_time': endTimeController.text,
         'location': locationController.text,
         'price': priceController.text,
-        'image_url': selectedImage?.path ?? '',
+        'image_url': imageUrlController.text,
       };
 
       var response = await EventProvider.createEvent(eventData);
@@ -182,9 +169,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 value: selectedCategory,
                 items: categories
                     .map((category) => DropdownMenuItem(
-                          value: category['id'].toString(),
-                          child: Text(category['name']),
-                        ))
+                  value: category['id'].toString(),
+                  child: Text(category['name']),
+                ))
                     .toList(),
                 onChanged: (value) {
                   setState(() {
@@ -200,7 +187,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 controller: startTimeController,
                 readOnly: true,
                 decoration:
-                    const InputDecoration(labelText: 'Fecha y hora de inicio'),
+                const InputDecoration(labelText: 'Fecha y hora de inicio'),
                 onTap: () => _pickDateTime(startTimeController),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -214,7 +201,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 controller: endTimeController,
                 readOnly: true,
                 decoration:
-                    const InputDecoration(labelText: 'Fecha y hora de fin'),
+                const InputDecoration(labelText: 'Fecha y hora de fin'),
                 onTap: () => _pickDateTime(endTimeController),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -247,25 +234,16 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _pickImage,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 12),
-                  ),
-                  child: const Text('Seleccionar Imagen'),
-                ),
+              TextFormField(
+                controller: imageUrlController,
+                decoration: const InputDecoration(labelText: 'URL de la Imagen'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, introduce la URL de la imagen';
+                  }
+                  return null;
+                },
               ),
-              if (selectedImage != null) ...[
-                const SizedBox(height: 16),
-                Center(
-                  child: Image.file(
-                    File(selectedImage!.path),
-                    height: 150,
-                  ),
-                ),
-              ],
               const SizedBox(height: 16),
               Center(
                 child: ElevatedButton(

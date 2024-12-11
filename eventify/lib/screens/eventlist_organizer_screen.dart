@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:eventify/screens/create_event_screen.dart';
 import 'package:eventify/widgets/event_category_widget.dart';
 import 'package:eventify/widgets/menu.dart';
 import 'package:eventify/provider/event_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EventListOrganizerScreen extends StatefulWidget {
@@ -36,11 +34,9 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
         Map<String, dynamic> jsonResponse = jsonDecode(eventsResponse.body);
         List<dynamic> fetchedEvents = jsonResponse['data'];
 
-        // Recuperar la lista de IDs de eventos eliminados
         SharedPreferences prefs = await SharedPreferences.getInstance();
         List<String> eliminatedEvents = prefs.getStringList('eliminatedEvents') ?? [];
 
-        // Filtrar los eventos eliminados y futuros
         fetchedEvents = fetchedEvents
             .where((event) {
           DateTime start = DateTime.parse(event['start_time']);
@@ -65,7 +61,6 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
     }
   }
 
-
   Future<void> fetchCategories() async {
     final response = await EventProvider.getCategories();
     if (response.statusCode == 200) {
@@ -85,7 +80,7 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message, style: const TextStyle(color: Colors.white)),
-        backgroundColor: Colors.green, // Success color
+        backgroundColor: Colors.green,
       ),
     );
   }
@@ -172,11 +167,9 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
       MaterialPageRoute(builder: (context) => CreateEventScreen()),
     );
   }
-
 }
 
-
-  class EventDetailModal extends StatelessWidget {
+class EventDetailModal extends StatelessWidget {
   final Map<String, dynamic> event;
 
   const EventDetailModal({Key? key, required this.event}) : super(key: key);
@@ -222,8 +215,7 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context); // Cierra el modal
-                  // Acción para editar el evento
+                  Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -232,7 +224,7 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context); // Cierra el modal
+                  Navigator.pop(context);
                   showDeleteConfirmation(context, event['id']);
                 },
                 style: ElevatedButton.styleFrom(
