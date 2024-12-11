@@ -129,6 +129,8 @@ class EventProvider {
   static Future<http.Response> deleteEvent(int id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
+    await prefs.setStringList(
+      'eliminatedEvents', (prefs.getStringList('eliminatedEvents') ?? [])..add(id.toString()),);
 
     var url = Uri.parse('$baseUrl/eventDelete');
     var headers = {

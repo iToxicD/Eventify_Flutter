@@ -6,6 +6,7 @@ import 'package:eventify/widgets/menu.dart';
 import 'package:eventify/provider/event_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EventListOrganizerScreen extends StatefulWidget {
   const EventListOrganizerScreen({super.key});
@@ -35,10 +36,16 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
         Map<String, dynamic> jsonResponse = jsonDecode(eventsResponse.body);
         List<dynamic> fetchedEvents = jsonResponse['data'];
 
+        // Recuperar la lista de IDs de eventos eliminados
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        List<String> eliminatedEvents = prefs.getStringList('eliminatedEvents') ?? [];
+
+        // Filtrar los eventos eliminados y futuros
         fetchedEvents = fetchedEvents
             .where((event) {
           DateTime start = DateTime.parse(event['start_time']);
-          return start.isAfter(DateTime.now());
+          return start.isAfter(DateTime.now()) &&
+              !eliminatedEvents.contains(event['id'].toString());
         })
             .toList()
           ..sort((a, b) {
@@ -57,6 +64,7 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
       showErrorSnackBar('Error de conexión');
     }
   }
+
 
   Future<void> fetchCategories() async {
     final response = await EventProvider.getCategories();
