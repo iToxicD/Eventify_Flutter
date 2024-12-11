@@ -39,17 +39,14 @@ class _EventListScreenState extends State<EventListScreen> {
         List<dynamic> registeredEventIds = registeredEvents.map((e) => e['id']).toList();
 
         DateTime now = DateTime.now();
-        DateTime tomorrow = DateTime(now.year, now.month, now.day).add(Duration(days: 2));
 
-        // Filtramos para obtener los eventos que empiezan a partir de mañana y a los que ademas no estamos registrados
+        // Filtrar eventos que comienzan estrictamente después de este instante
         List<dynamic> filteredEvents = events.where((event) {
-          DateTime? eventStartTime = DateTime.tryParse(event['start_time'] ?? '');
-          bool isUpcoming = eventStartTime != null && eventStartTime.isAfter(tomorrow.subtract(Duration(days: 1)));
-          bool isNotRegistered = !registeredEventIds.contains(event['id']);
-          return isUpcoming && isNotRegistered;
+          DateTime eventStartTime = DateTime.parse(event['start_time']);
+          return eventStartTime.isAfter(now) && !registeredEventIds.contains(event['id']);
         }).toList();
 
-        // Orden ascendente por fecha
+        // Orden ascendente por fecha y hora
         filteredEvents.sort((a, b) {
           DateTime startA = DateTime.parse(a['start_time']);
           DateTime startB = DateTime.parse(b['start_time']);
@@ -57,7 +54,7 @@ class _EventListScreenState extends State<EventListScreen> {
         });
 
         setState(() {
-          availableEvents = filteredEvents; // Solo los eventos no registrados y futuros
+          availableEvents = filteredEvents;
           filterEvents = List.from(availableEvents); // Inicialmente, muestra todos
         });
       } else {
@@ -67,9 +64,6 @@ class _EventListScreenState extends State<EventListScreen> {
       showErrorSnackBar('Error de conexión');
     }
   }
-
-
-
 
   // Función para filtrar eventos por categoría
   void filterEvent(String category) {
