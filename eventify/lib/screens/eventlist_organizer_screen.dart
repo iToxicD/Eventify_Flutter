@@ -22,26 +22,26 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
   @override
   void initState() {
     super.initState();
-    fetchEvents();
+    refreshEvents();
     fetchCategories();
+  }
+
+  Future<void> refreshEvents() async {
+    await fetchEvents();
   }
 
   Future<void> fetchEvents() async {
     try {
       var eventsResponse = await EventProvider.getEventsByOrganizer();
-
       if (eventsResponse.statusCode == 200) {
         Map<String, dynamic> jsonResponse = jsonDecode(eventsResponse.body);
         List<dynamic> fetchedEvents = jsonResponse['data'];
 
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        List<String> eliminatedEvents = prefs.getStringList('eliminatedEvents') ?? [];
-
+        // Filtrar eventos para excluir los eliminados (deleted == 1)
         fetchedEvents = fetchedEvents
             .where((event) {
           DateTime start = DateTime.parse(event['start_time']);
-          return start.isAfter(DateTime.now()) &&
-              !eliminatedEvents.contains(event['id'].toString());
+          return start.isAfter(DateTime.now()) && event['deleted'] != 1;
         })
             .toList()
           ..sort((a, b) {
@@ -72,7 +72,7 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
         }
       });
     } else {
-      throw Exception("Error al cargar las categorías: ${response.statusCode}");
+      showErrorSnackBar("Error al cargar las categorías: ${response.statusCode}");
     }
   }
 
@@ -102,7 +102,7 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
       ),
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return EventDetailModal(event: event);
+        return EventDetailModal(event: event, refreshEvents: refreshEvents);
       },
     );
   }
@@ -161,18 +161,26 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
     );
   }
 
-  void showCreateEventForm(BuildContext context) {
-    Navigator.push(
+  void showCreateEventForm(BuildContext context) async {
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => CreateEventScreen()),
     );
+
+    // Si result no es nulo, significa que se ha creado un evento
+    if (result != null && result) {
+      fetchEvents(); // Refresca la lista de eventos
+      showSuccessSnackBar('Evento creado exitosamente');
+    }
   }
+
 }
 
 class EventDetailModal extends StatelessWidget {
   final Map<String, dynamic> event;
+  final Future<void> Function() refreshEvents;
 
-  const EventDetailModal({Key? key, required this.event}) : super(key: key);
+  const EventDetailModal({Key? key, required this.event, required this.refreshEvents}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -252,8 +260,9 @@ class EventDetailModal extends StatelessWidget {
               child: const Text('Cancelar'),
             ),
             TextButton(
-              onPressed: () {
-                EventProvider.deleteEvent(eventId);
+              onPressed: () async {
+                await EventProvider.deleteEvent(eventId);
+                refreshEvents(); // Actualiza la lista de eventos
                 Navigator.of(context).pop(); // Cierra el diálogo
               },
               child: const Text('Eliminar'),

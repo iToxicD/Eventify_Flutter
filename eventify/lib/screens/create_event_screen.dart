@@ -113,7 +113,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Evento creado con éxito.')),
         );
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       } else {
         print('Error creando evento: ${response.body}');
       }
