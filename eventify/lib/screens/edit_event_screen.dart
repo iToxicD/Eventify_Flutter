@@ -25,6 +25,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
   final TextEditingController longitudeController = TextEditingController();
   final TextEditingController maxAttendeesController = TextEditingController();
   String? selectedCategory;
+  Map<String, String> categoriesMap = {}; // Mapa para las categorías
   List<Map<String, dynamic>> categories = [];
   bool isLoading = true;
 
@@ -42,7 +43,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
     latitudeController.text = widget.event['latitude']?.toString() ?? '';
     longitudeController.text = widget.event['longitude']?.toString() ?? '';
     maxAttendeesController.text = widget.event['max_attendees']?.toString() ?? '';
-    selectedCategory = widget.event['category_id'].toString();
+    selectedCategory = widget.event['category_name'];
 
     _fetchCategories();
   }
@@ -54,13 +55,16 @@ class _EditEventScreenState extends State<EditEventScreen> {
         var data = jsonDecode(response.body);
         setState(() {
           categories = List<Map<String, dynamic>>.from(data['data']);
+          categoriesMap = { // Guardamos el mapa id -> name
+            for (var category in categories) category['id'].toString(): category['name']
+          };
           isLoading = false;
 
-          // Asegura que selectedCategory sea válido
-          if (categories.any((category) => category['id'].toString() == selectedCategory)) {
-            selectedCategory = widget.event['category_id'].toString();
-          } else {
-            selectedCategory = null; // O un valor por defecto
+          // Asegura que la categoría del evento exista en la lista
+          if (selectedCategory != null && categories.isNotEmpty) {
+            selectedCategory = categoriesMap.containsValue(selectedCategory)
+                ? selectedCategory
+                : null; // Si no se encuentra, ponemos null o valor por defecto
           }
         });
       } else {
@@ -76,19 +80,30 @@ class _EditEventScreenState extends State<EditEventScreen> {
 
   void _updateEvent() async {
     if (_formKey.currentState!.validate()) {
+      // Obtener el id correspondiente a la categoría seleccionada
+      String? categoryId = categoriesMap.entries
+          .firstWhere((entry) => entry.value == selectedCategory, orElse: () => MapEntry('', ''))
+          .key;
+
+      if (categoryId.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Por favor, selecciona una categoría válida')),
+        );
+        return;
+      }
+
       // Obtener los valores de los campos de texto
       Map<String, dynamic> updatedEventData = {
         'id': widget.event['id'],
-        'organizer_id': widget.event['organizer_id'], // Asumí que también es parte del evento
         'title': titleController.text,
         'description': descriptionController.text,
-        'category_id': selectedCategory,
+        'category_id': categoryId, // Enviamos el id de la categoría
         'start_time': startTimeController.text,
         'end_time': endTimeController.text,
         'location': locationController.text,
-        'latitude': widget.event['latitude'] ?? '', // Si no tienes latitud, usa una cadena vacía
-        'longitude': widget.event['longitude'] ?? '', // Lo mismo con longitud
-        'max_attendees': widget.event['max_attendees'] ?? '', // Si no tienes, usa vacío
+        'latitude': widget.event['latitude'] ?? '',
+        'longitude': widget.event['longitude'] ?? '',
+        'max_attendees': widget.event['max_attendees'] ?? '',
         'price': priceController.text,
         'image_url': imageUrlController.text,
       };
@@ -113,6 +128,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,10 +151,10 @@ class _EditEventScreenState extends State<EditEventScreen> {
             children: [
               TextFormField(
                 controller: titleController,
-                decoration: const InputDecoration(labelText: 'Título'),
+                decoration: const InputDecoration(labelText: 'Título del Evento'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce un título';
+                    return 'Por favor, introduce el título del evento';
                   }
                   return null;
                 },
@@ -159,10 +175,10 @@ class _EditEventScreenState extends State<EditEventScreen> {
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Categoría'),
                 value: selectedCategory,
-                items: categories
-                    .map((category) => DropdownMenuItem(
-                  value: category['id'].toString(),
-                  child: Text(category['name']),
+                items: categoriesMap.entries
+                    .map((entry) => DropdownMenuItem(
+                  value: entry.value, // Usamos el nombre como valor
+                  child: Text(entry.value),
                 ))
                     .toList(),
                 onChanged: (value) {

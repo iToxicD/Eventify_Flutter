@@ -28,7 +28,6 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
   Future<void> _initializeData() async {
     await Future.wait([
       fetchEvents(),
-      fetchCategories(),
     ]);
   }
 
@@ -60,24 +59,8 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
     }
   }
 
-  Future<void> fetchCategories() async {
-    try {
-      final response = await EventProvider.getCategories();
-      if (response.statusCode == 200) {
-        final List<dynamic> categories = json.decode(response.body)['data'];
-        setState(() {
-          eventTypes = categories.map<String>((category) => category['name'] as String).toList();
-          for (var type in eventTypes) {
-            selectedTypes[type] = false;
-          }
-        });
-      } else {
-        _showSnackBar('Error al cargar las categorías', Colors.red);
-      }
-    } catch (e) {
-      _showSnackBar('Error de conexión', Colors.red);
-    }
-  }
+
+
 
   void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -175,7 +158,11 @@ class EventDetailModal extends StatelessWidget {
   final Map<String, dynamic> event;
   final Future<void> Function() refreshEvents;
 
-  const EventDetailModal({Key? key, required this.event, required this.refreshEvents}) : super(key: key);
+  const EventDetailModal({
+    Key? key,
+    required this.event,
+    required this.refreshEvents,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -213,6 +200,8 @@ class EventDetailModal extends StatelessWidget {
           Text('Ubicación: ${event['location']}'),
           Text('Precio: ${event['price']} \$'),
           const SizedBox(height: 16),
+          Text('Categoría: ${event['category_name']}'), // Mostrar el nombre de la categoría
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -229,6 +218,7 @@ class EventDetailModal extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
                 ),
                 child: const Text('Editar'),
               ),
@@ -239,6 +229,7 @@ class EventDetailModal extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
                 ),
                 child: const Text('Eliminar'),
               ),
