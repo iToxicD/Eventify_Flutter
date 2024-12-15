@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:eventify/screens/create_event_screen.dart';
+import 'package:eventify/screens/edit_event_screen.dart';
 import 'package:eventify/widgets/event_category_widget.dart';
 import 'package:eventify/widgets/menu.dart';
 import 'package:eventify/provider/event_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class EventListOrganizerScreen extends StatefulWidget {
   const EventListOrganizerScreen({super.key});
@@ -22,12 +22,14 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
   @override
   void initState() {
     super.initState();
-    refreshEvents();
-    fetchCategories();
+    _initializeData();
   }
 
-  Future<void> refreshEvents() async {
-    await fetchEvents();
+  Future<void> _initializeData() async {
+    await Future.wait([
+      fetchEvents(),
+      fetchCategories(),
+    ]);
   }
 
   Future<void> fetchEvents() async {
@@ -35,10 +37,7 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
       var eventsResponse = await EventProvider.getEventsByOrganizer();
       if (eventsResponse.statusCode == 200) {
         Map<String, dynamic> jsonResponse = jsonDecode(eventsResponse.body);
-        List<dynamic> fetchedEvents = jsonResponse['data'];
-
-        // Filtrar eventos para excluir los eliminados (deleted == 1)
-        fetchedEvents = fetchedEvents
+        List<dynamic> fetchedEvents = jsonResponse['data']
             .where((event) {
           DateTime start = DateTime.parse(event['start_time']);
           return start.isAfter(DateTime.now()) && event['deleted'] != 1;
@@ -54,46 +53,42 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
           events = fetchedEvents;
         });
       } else {
-        showErrorSnackBar('Error al cargar eventos creados');
+        _showSnackBar('Error al cargar eventos creados', Colors.red);
       }
     } catch (e) {
-      showErrorSnackBar('Error de conexión');
+      _showSnackBar('Error de conexión', Colors.red);
     }
   }
 
   Future<void> fetchCategories() async {
-    final response = await EventProvider.getCategories();
-    if (response.statusCode == 200) {
-      final List<dynamic> categories = json.decode(response.body)['data'];
-      setState(() {
-        eventTypes = categories.map<String>((category) => category['name'] as String).toList();
-        for (var type in eventTypes) {
-          selectedTypes[type] = false;
-        }
-      });
-    } else {
-      showErrorSnackBar("Error al cargar las categorías: ${response.statusCode}");
+    try {
+      final response = await EventProvider.getCategories();
+      if (response.statusCode == 200) {
+        final List<dynamic> categories = json.decode(response.body)['data'];
+        setState(() {
+          eventTypes = categories.map<String>((category) => category['name'] as String).toList();
+          for (var type in eventTypes) {
+            selectedTypes[type] = false;
+          }
+        });
+      } else {
+        _showSnackBar('Error al cargar las categorías', Colors.red);
+      }
+    } catch (e) {
+      _showSnackBar('Error de conexión', Colors.red);
     }
   }
 
-  void showSuccessSnackBar(String message) {
+  void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message, style: const TextStyle(color: Colors.white)),
-        backgroundColor: Colors.green,
+        backgroundColor: color,
       ),
     );
   }
 
-  void showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message, style: const TextStyle(color: Colors.white)),
-      ),
-    );
-  }
-
-  void showEventDetailsModal(BuildContext context, Map<String, dynamic> event) {
+  void _showEventDetailsModal(BuildContext context, Map<String, dynamic> event) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -102,9 +97,24 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
       ),
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return EventDetailModal(event: event, refreshEvents: refreshEvents);
+        return EventDetailModal(
+          event: event,
+          refreshEvents: fetchEvents,
+        );
       },
     );
+  }
+
+  void _showCreateEventForm(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CreateEventScreen()),
+    );
+
+    if (result != null && result) {
+      fetchEvents();
+      _showSnackBar('Evento creado exitosamente', Colors.green);
+    }
   }
 
   @override
@@ -118,7 +128,6 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xff620091),
-        shadowColor: Colors.grey[700],
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -141,7 +150,7 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
           itemBuilder: (context, index) {
             final event = events[index];
             return GestureDetector(
-              onTap: () => showEventDetailsModal(context, event),
+              onTap: () => _showEventDetailsModal(context, event),
               child: EventCategoryWidget(
                 category: event['category_name'] ?? 'Sin categoría',
                 imageUrl: event['image_url'] ?? '',
@@ -153,27 +162,13 @@ class _EventListOrganizerScreenState extends State<EventListOrganizerScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showCreateEventForm(context),
+        onPressed: () => _showCreateEventForm(context),
         backgroundColor: const Color(0xff8a0db7),
         child: const Icon(Icons.add, color: Colors.white),
       ),
       bottomNavigationBar: const Menu(currentIndex: 0),
     );
   }
-
-  void showCreateEventForm(BuildContext context) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CreateEventScreen()),
-    );
-
-    // Si result no es nulo, significa que se ha creado un evento
-    if (result != null && result) {
-      fetchEvents(); // Refresca la lista de eventos
-      showSuccessSnackBar('Evento creado exitosamente');
-    }
-  }
-
 }
 
 class EventDetailModal extends StatelessWidget {
@@ -222,8 +217,15 @@ class EventDetailModal extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
+                onPressed: () async {
+                  Navigator.pop(context);  // Cerrar el modal de detalles
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditEventScreen(event: event),
+                    ),
+                  );
+                  refreshEvents();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -233,7 +235,7 @@ class EventDetailModal extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  showDeleteConfirmation(context, event['id']);
+                  _showDeleteConfirmation(context, event['id']);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -247,7 +249,7 @@ class EventDetailModal extends StatelessWidget {
     );
   }
 
-  void showDeleteConfirmation(BuildContext context, int eventId) {
+  void _showDeleteConfirmation(BuildContext context, int eventId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -262,8 +264,8 @@ class EventDetailModal extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 await EventProvider.deleteEvent(eventId);
-                refreshEvents(); // Actualiza la lista de eventos
-                Navigator.of(context).pop(); // Cierra el diálogo
+                refreshEvents();
+                Navigator.of(context).pop();
               },
               child: const Text('Eliminar'),
             ),

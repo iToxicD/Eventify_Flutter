@@ -124,6 +124,29 @@ class EventProvider {
     return response;
   }
 
+  static Future<http.Response> updateEvent(Map<String, dynamic> eventData) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+    String? userId = prefs.getString('user_id');
+
+    // Añadimos el organizer_id al mapa de datos del evento
+    eventData['organizer_id'] = userId;
+
+    var url = Uri.parse('$baseUrl/eventUpdate');
+
+    var headers = {
+      "Accept": "application/json",
+      "Authorization": "Bearer $token",
+      "Content-Type": "application/json",
+    };
+
+    var response = await http.post(url, headers: headers, body: jsonEncode(eventData));
+
+    print('Response statusCode: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    return response;
+  }
 
 
   static Future<http.Response> deleteEvent(int id) async {
