@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:eventify/provider/event_provider.dart';
 import 'package:eventify/widgets/eventlist_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -10,11 +13,63 @@ class GraphEventScreen extends StatefulWidget {
 }
 
 class _GraphEventScreenState extends State<GraphEventScreen> {
+  @override
+  void initState() {
+    super.initState();
+    findEvents();
+  }
+
   // Lista de categorías disponibles
   final List<String> category = ["Deportes", "Tecnología", "Música"];
+  List<dynamic> eventData = [];
+  bool status = true; // Para mostrar un mensaje, si no hay datos
 
   // Categoria que saldrá por defecto
   String selectCategory = "Deportes";
+
+  Future<void> findEvents() async {
+    try {
+      var response = await EventProvider.getEventsByOrganizer();
+      if (response.statusCode == 200) {
+        setState(() {
+          eventData = jsonDecode(response.body);
+          status = false;
+        });
+      } else {
+        throw Exception('Error al cargar los eventos: ${response.body}');
+      }
+    } catch (e) {
+      setState(() {
+        status = false;
+      });
+      print(e);
+    }
+  }
+
+  Future<void> findCategory() async {
+    try {
+      var response = await EventProvider.getCategories();
+      if (response.statusCode == 200) {
+        setState(() {
+          eventData = jsonDecode(response.body);
+          status = false;
+        });
+      } else {
+        throw Exception('Error al cargar las categorias: ${response.body}');
+      }
+    } catch (e) {
+      setState(() {
+        status = false;
+      });
+      print(e);
+    }
+  }
+
+  List<DatosMes> getData() {
+    return eventData.map((event) {
+      return DatosMes(event['month'], event['registeredEvents']);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +106,12 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
                 setState(() {
                   selectCategory = nuevaCategoria!;
                 });
+                findEvents();
               },
             ),
             SizedBox(height: 16),
 
-            // Gráfica vacía
+            // Gráfica
             Expanded(
               child: SfCartesianChart(
                 title: ChartTitle(text: 'Registros en los últimos 4 meses'),
@@ -67,7 +123,7 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
                 ),
                 series: <ChartSeries>[
                   ColumnSeries<DatosMes, String>(
-                    dataSource: [], // No hay datos
+                    dataSource: getData(),
                     xValueMapper: (DatosMes dato, _) => dato.mes,
                     yValueMapper: (DatosMes dato, _) => dato.valor,
                     name: selectCategory,
