@@ -1,5 +1,6 @@
 import 'package:eventify/screens/eventlist_organizer_screen.dart';
 import 'package:eventify/screens/eventsRegistered_screen.dart';
+import 'package:eventify/screens/graph_event_screen.dart';
 import 'package:eventify/screens/home_screen.dart';
 import 'package:eventify/screens/informe_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class AppRoutes {
   static const String listEvents = "/events";
   static const String myEvents = "/myEvents";
   static const String informe = "/informe";
+  static const String graphs = "/graphs";
 
   static final routes = <String, WidgetBuilder>{
     home: (context) => const HomeScreen(),
@@ -31,5 +33,6 @@ class AppRoutes {
     },
     myEvents: (context) => const RegisteredEventsScreen(),
     informe: (context) => InformeScreen(),
+    graphs: (context) => GraphEventScreen()
   };
 }

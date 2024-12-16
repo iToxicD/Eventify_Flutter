@@ -47,6 +47,7 @@ dependencies:
   flutter_email_sender: ^6.0.3
   permission_handler: ^10.0.0
   mailer: ^6.0.0
+  syncfusion_flutter_charts: ^21.2.4
 
 dev_dependencies:
   flutter_test:
