@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:eventify/provider/event_provider.dart';
-import 'package:eventify/widgets/eventlist_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -17,15 +16,18 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
   void initState() {
     super.initState();
     findEvents();
+    findUserData();
+    findCategories();
   }
 
   // Lista de categorías disponibles
-  final List<String> category = ["Deportes", "Tecnología", "Música"];
+  Map<String, String> categories = {};
   List<dynamic> eventData = [];
+  List<dynamic> userData = [];
   bool status = true; // Para mostrar un mensaje, si no hay datos
 
   // Categoria que saldrá por defecto
-  String selectCategory = "Deportes";
+  String selectCategory = "Technology";
 
   Future<void> findEvents() async {
     try {
@@ -34,9 +36,10 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
         setState(() {
           eventData = jsonDecode(response.body);
           status = false;
+          print(jsonEncode(eventData));
         });
       } else {
-        throw Exception('Error al cargar los eventos: ${response.body}');
+        throw Exception('Error al cargar los eventos');
       }
     } catch (e) {
       setState(() {
@@ -46,27 +49,47 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
     }
   }
 
-  Future<void> findCategory() async {
+  Future<void> findUserData() async {
     try {
-      var response = await EventProvider.getCategories();
+      var response = await EventProvider.getEventsByUser();
       if (response.statusCode == 200) {
         setState(() {
-          eventData = jsonDecode(response.body);
-          status = false;
+          userData = jsonDecode(response.body);
         });
       } else {
-        throw Exception('Error al cargar las categorias: ${response.body}');
+        throw Exception('Error al cargar los datos de usuarios');
       }
     } catch (e) {
-      setState(() {
-        status = false;
-      });
       print(e);
     }
+  }
+
+  Future<void> findCategories() async {
+    var response = await EventProvider.getCategories();
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+       var categoriesData = List<Map<String, dynamic>>.from(data['data']);
+      setState(() {
+      // Convierte la lista de mapas en un Map<String, String>
+      categories = { 
+        for (var category in categoriesData) 
+          category['id'].toString(): category['name']
+      };
+      print("Categorías cargadas: $categories");
+    });
+    } else {
+      print('Error fetching categories: ${response.body}');
+    }
+    
   }
 
   List<DatosMes> getData() {
-    return eventData.map((event) {
+    List<dynamic> filterData = eventData
+        .where((event) => event['category_id'] == selectCategory)
+        .toList();
+    print("Eventos filtrados (${selectCategory}): ${jsonEncode(filterData)}");
+    if (filterData.isEmpty) return [];
+    return filterData.map((event) {
       return DatosMes(event['month'], event['registeredEvents']);
     }).toList();
   }
@@ -95,8 +118,8 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
             ),
             SizedBox(height: 8),
             DropdownButton<String>(
-              value: selectCategory,
-              items: category.map((String categoria) {
+              value: categories.containsValue(selectCategory) ? selectCategory : null,
+              items: categories.values.map((String categoria) {
                 return DropdownMenuItem<String>(
                   value: categoria,
                   child: Text(categoria),
