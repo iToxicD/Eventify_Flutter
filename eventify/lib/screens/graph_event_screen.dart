@@ -29,14 +29,16 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
   // Categoria que saldrá por defecto
   String selectCategory = "Technology";
 
+  // Obtiene los eventos creado por el organizador
   Future<void> findEvents() async {
     try {
       var response = await EventProvider.getEventsByOrganizer();
       if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+
         setState(() {
-          eventData = jsonDecode(response.body);
-          status = false;
-          print(jsonEncode(eventData));
+          eventData = List<dynamic>.from(data['data']);
+          print("Eventos cargados: $eventData");
         });
       } else {
         throw Exception('Error al cargar los eventos');
@@ -45,10 +47,36 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
       setState(() {
         status = false;
       });
-      print(e);
+      print("Error al cargar eventos: $e");
     }
   }
 
+  // Filtra los eventos del organizador
+  Future<void> findEventsByCategory(String categoryId) async {
+    try {
+      var response = await EventProvider.getEventsByOrganizer();
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+
+        setState(() {
+          // Filtra los eventos segun la categoria
+          eventData = List<dynamic>.from(data['data']).where((event) {
+            return event['category_id'].toString() == categoryId;
+          }).toList();
+          print("Eventos filtrados para la categoría $categoryId: $eventData");
+        });
+      } else {
+        throw Exception('Error al cargar los eventos por categoría');
+      }
+    } catch (e) {
+      setState(() {
+        status = false;
+      });
+      print("Error al cargar eventos por categoría: $e");
+    }
+  }
+
+  // Obtiene informacion del usuario
   Future<void> findUserData() async {
     try {
       var response = await EventProvider.getEventsByUser();
@@ -64,34 +92,54 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
     }
   }
 
+  // Obtiene las categorias
   Future<void> findCategories() async {
     var response = await EventProvider.getCategories();
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-       var categoriesData = List<Map<String, dynamic>>.from(data['data']);
+      var categoriesData = List<Map<String, dynamic>>.from(data['data']);
       setState(() {
-      // Convierte la lista de mapas en un Map<String, String>
-      categories = { 
-        for (var category in categoriesData) 
-          category['id'].toString(): category['name']
-      };
-      print("Categorías cargadas: $categories");
-    });
+        // Convierte la lista de mapas en un Map
+        categories = {
+          for (var category in categoriesData)
+            category['id'].toString(): category['name']
+        };
+        print("Categorías cargadas: $categories");
+      });
     } else {
-      print('Error fetching categories: ${response.body}');
+      print('Error al buscar categorias: ${response.body}');
     }
-    
   }
 
-  List<DatosMes> getData() {
+  // Datos para mostrar en la gráfica
+  List<DatosMes?> getData() {
+    // Obtener el ID de la categoría seleccionada
+    String? categoryId = categories.entries
+        .firstWhere((entry) => entry.value == selectCategory,
+            orElse: () => MapEntry('', ''))
+        .key;
+
+    // Filtrar eventos por el id de la categoría
     List<dynamic> filterData = eventData
-        .where((event) => event['category_id'] == selectCategory)
+        .where((event) => event['category_id'].toString() == categoryId)
         .toList();
+
     print("Eventos filtrados (${selectCategory}): ${jsonEncode(filterData)}");
+
     if (filterData.isEmpty) return [];
-    return filterData.map((event) {
-      return DatosMes(event['month'], event['registeredEvents']);
-    }).toList();
+    return filterData
+        .map((event) {
+          // Verifica que las claves 'month' y 'registeredEvents' existan
+          if (event.containsKey('month') &&
+              event.containsKey('registeredEvents')) {
+            return DatosMes(event['month'], event['registeredEvents']);
+          } else {
+            print("Evento sin datos válidos: ${jsonEncode(event)}");
+            return null; // Ignora datos inválidos
+          }
+        })
+        .where((element) => element != null)
+        .toList();
   }
 
   @override
@@ -117,21 +165,28 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
-            DropdownButton<String>(
-              value: categories.containsValue(selectCategory) ? selectCategory : null,
-              items: categories.values.map((String categoria) {
-                return DropdownMenuItem<String>(
-                  value: categoria,
-                  child: Text(categoria),
-                );
-              }).toList(),
-              onChanged: (String? nuevaCategoria) {
-                setState(() {
-                  selectCategory = nuevaCategoria!;
-                });
-                findEvents();
-              },
-            ),
+            categories.isEmpty
+                ? Center(child: CircularProgressIndicator())
+                : DropdownButton<String>(
+                    value: categories.containsKey(selectCategory)
+                        ? selectCategory
+                        : categories.keys.first,
+                    items: categories.entries.map((entry) {
+                      return DropdownMenuItem<String>(
+                        value: entry.key, // id de la categoría
+                        child: Text(entry.value), // Nombre de la categoría
+                      );
+                    }).toList(),
+                    onChanged: (String? nuevaCategoriaId) {
+                      setState(() {
+                        selectCategory = nuevaCategoriaId!;
+                      });
+
+                      // Actualiza los datos
+                      findEvents();
+                    },
+                  ),
+
             SizedBox(height: 16),
 
             // Gráfica
