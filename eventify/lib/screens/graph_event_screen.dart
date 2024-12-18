@@ -17,6 +17,7 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
   List<DatosMes> datosMes = [];
   String selectedCategory = "1";
   Map<String, String> categories = {};
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -30,11 +31,15 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
   }
 
   Future<void> actualizarDatos(String categoria) async {
+    setState(() {
+      _isLoading = true;
+    });
     var graphData = await getGraphData(categoria);
     setState(() {
       datosMes = graphData.entries.map((entry) {
         return DatosMes(entry.key, entry.value);
       }).toList();
+      _isLoading = false;
     });
   }
 
@@ -203,27 +208,38 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
 
             // Gráfica
             Expanded(
-              child: SfCartesianChart(
-                title: ChartTitle(text: 'Registros en los últimos 4 meses'),
-                primaryXAxis: CategoryAxis(
-                  title: AxisTitle(text: 'Meses'),
-                ),
-                primaryYAxis: NumericAxis(
-                  title: AxisTitle(text: 'Registros'),
-                ),
-                series: <ChartSeries>[
-                  ColumnSeries<DatosMes, String>(
-                    dataSource: datosMes,
-                    xValueMapper: (DatosMes dato, _) => dato.mes,
-                    yValueMapper: (DatosMes dato, _) => dato.valor,
-                    name: selectedCategory,
-                    color: Color(0xff620091),
-                    dataLabelSettings: DataLabelSettings(isVisible: true),
+              child: Stack(
+                children: [
+                  SfCartesianChart(
+                    title: ChartTitle(text: 'Registros en los últimos 4 meses'),
+                    primaryXAxis: CategoryAxis(
+                      title: AxisTitle(text: 'Meses'),
+                    ),
+                    primaryYAxis: NumericAxis(
+                      title: AxisTitle(text: 'Registros'),
+                    ),
+                    series: <ChartSeries>[
+                      ColumnSeries<DatosMes, String>(
+                        dataSource: datosMes,
+                        xValueMapper: (DatosMes dato, _) => dato.mes,
+                        yValueMapper: (DatosMes dato, _) => dato.valor,
+                        name: selectedCategory,
+                        color: Color(0xff620091),
+                        dataLabelSettings: DataLabelSettings(isVisible: true),
+                      ),
+                    ],
+                    tooltipBehavior: TooltipBehavior(enable: true),
                   ),
+                  if (_isLoading)
+                    Container(
+                      color: Colors.white.withOpacity(0.7), // Fondo translúcido
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
                 ],
-                tooltipBehavior: TooltipBehavior(enable: true),
               ),
-            ),
+            )
           ],
         ),
       ),
