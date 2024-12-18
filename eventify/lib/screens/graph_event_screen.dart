@@ -23,7 +23,7 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
     await findEvents(); // Asegura que los datos se carguen primero
     await findUserData();
     await findCategories();
-    await getEventRegistrationCounts();
+    await getEventRegistrationCounts(selectCategory);
     print(
         "eventos id del organizador después de cargar datos: $eventsOfThisOrganizer");
   }
@@ -37,7 +37,7 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
   bool status = true; // Para mostrar un mensaje, si no hay datos
 
   // Categoria que saldrá por defecto
-  String selectCategory = "Technology";
+  String selectCategory = "Music";
 
   // Obtiene los eventos creado por el organizador
   Future<void> findEvents() async {
@@ -58,11 +58,11 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
 
         // Filtrar eventos de los últimos 4 meses
         DateTime actualDate = DateTime.now();
-        DateTime fourMonthsAgo = actualDate.subtract(Duration(days: 120));
+        DateTime fourMonths = actualDate.subtract(Duration(days: 120));
 
         var filteredEvents = eventData.where((event) {
           DateTime eventDate = DateTime.parse(event['start_time']);
-          return eventDate.isAfter(fourMonthsAgo) &&
+          return eventDate.isAfter(fourMonths) &&
               eventDate.isBefore(actualDate);
         }).toList();
         print("Eventos cargados 4 meses: $filteredEvents");
@@ -102,15 +102,10 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
           var filteredEvents = eventData.where((event) {
             return event['category_name'] == categoryName;
           }).toList();
-          // Obtener los IDs de los eventos filtrados
-          List<String> eventIds =
-              filteredEvents.map((event) => event['id'].toString()).toList();
-          // Mostrar el resultado del filtrado
-          print(
-              "IDs de eventos filtrados para la categoría $categoryId: $eventIds");
-          if (eventIds.isEmpty) {
-            print("No se encontraron eventos para la categoría $categoryId.");
-          }
+          print("Eventos filtrados: $filteredEvents");
+
+          // Actualizar el estado con los eventos filtrados
+          eventData = filteredEvents;
         });
       } else {
         throw Exception('Error al cargar los eventos por categoría');
@@ -158,70 +153,107 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
     }
   }
 
-  Future<Map<String, int>> getEventRegistrationCounts() async {
-    // Mapa para almacenar los conteos por ID de evento
-    Map<String, int> eventRegistrationCounts = {
-      for (var eventId in eventsOfThisOrganizer) eventId.toString(): 0
+  Future<Map<String, int>> getEventRegistrationCounts(
+      String categoryName) async {
+    // Mapa para almacenar los conteos de usuarios registrados por mes
+    Map<String, int> registerByMonth = {
+      "Mes 1": 0,
+      "Mes 2": 0,
+      "Mes 3": 0,
+      "Mes 4": 0,
     };
-    print("IDs de eventos del organizador: $eventsOfThisOrganizer");
+
     try {
-      // Obtener la lista de usuarios
-      var response = await UserProvider.getUsers();
+      // Obtener eventos del organizador
+      var response = await EventProvider.getEventsByOrganizer();
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        // Filtrar usuarios con rol 'u'
-        List<dynamic> users = List<dynamic>.from(data['data']);
-        var filteredUsers = users.where((user) => user['role'] == 'u');
-        print("Usuarios filtrados: ${filteredUsers}");
-        // Iterar sobre cada usuario con rol 'u'
-        for (var user in filteredUsers) {
-          //print(user);
-          String userId = user['id'].toString();
+        List<dynamic> allEvents = List<dynamic>.from(data['data']);
 
-          // Obtener eventos del usuario
-          var userEventsResponse =
-              await EventProvider.getEventsByUserId(userId);
+        // Obtener la fecha actual y calcular el rango de 4 meses atrás
+        DateTime now = DateTime.now();
+        DateTime fourMonths = now.subtract(Duration(days: 120));
 
-          if (userEventsResponse.statusCode == 200) {
-            var userEventsData = jsonDecode(userEventsResponse.body);
-            print("Eventos de usuarios: ${userEventsData}");
+        // Filtrar eventos por categoría y fechas
+        List<dynamic> filteredEvents = allEvents.where((event) {
+          DateTime eventDate = DateTime.parse(event['start_time']);
+          return event['category_name'] == categoryName &&
+              eventDate.isAfter(fourMonths) &&
+              eventDate.isBefore(now);
+        }).toList();
 
-            // IDs de los eventos a los que está registrado el usuario
-            List<String> userEventIds =
-                List<dynamic>.from(userEventsData['data'])
-                    .map((event) => event['id'].toString())
-                    .toList();
-            print("Lista de eventos del usuario(id): ${userEventIds}");
+        print("Eventos por categoría '$categoryName': $filteredEvents");
 
-            // Comparar con los eventos del organizador y actualiza el mapa
-            for (var eventId in userEventIds) {
-              if (eventRegistrationCounts.containsKey(eventId)) {
-                eventRegistrationCounts[eventId] =
-                    eventRegistrationCounts[eventId]! + 1;
+        // Mapear IDs de los eventos filtrados
+        List<String> filteredEventIds =
+            filteredEvents.map((event) => event['id'].toString()).toList();
+
+        // Inicializar mapa de conteos para los eventos filtrados
+        Map<String, int> eventRegistrationCounts = {
+          for (var eventId in filteredEventIds) eventId: 0
+        };
+
+        // Obtener la lista de usuarios
+        var usersResponse = await UserProvider.getUsers();
+        if (usersResponse.statusCode == 200) {
+          var usersData = jsonDecode(usersResponse.body);
+          List<dynamic> users = List<dynamic>.from(usersData['data']);
+          var filteredUsers = users.where((user) => user['role'] == 'u');
+
+          // Contabilizar usuarios registrados en eventos filtrados
+          for (var user in filteredUsers) {
+            String userId = user['id'].toString();
+
+            // Obtener eventos del usuario
+            var userEventsResponse =
+                await EventProvider.getEventsByUserId(userId);
+            if (userEventsResponse.statusCode == 200) {
+              var userEventsData = jsonDecode(userEventsResponse.body);
+              List<String> userEventIds =
+                  List<dynamic>.from(userEventsData['data'])
+                      .map((event) => event['id'].toString())
+                      .toList();
+
+              // Comparar con los eventos filtrados y actualizar conteos
+              for (var eventId in userEventIds) {
+                if (eventRegistrationCounts.containsKey(eventId)) {
+                  eventRegistrationCounts[eventId] =
+                      eventRegistrationCounts[eventId]! + 1;
+                }
               }
             }
           }
         }
-        // Usuarios registrados por evento
-        eventRegistrationCounts.forEach((eventId, count) {
-          print("Evento ID: $eventId - Usuarios registrados: $count");
-        });
+        // Clasificar registros por mes
+        for (var event in filteredEvents) {
+          DateTime eventDate = DateTime.parse(event['start_time']);
+          String eventId = event['id'].toString();
+          int registerCount = eventRegistrationCounts[eventId] ?? 0;
+
+          // Calcular a qué grupo de mes pertenece
+          int monthGroup = (now.month - eventDate.month + 12) % 12;
+          if (monthGroup >= 0 && monthGroup < 4) {
+            String monthLabel = "Mes ${4 - monthGroup}";
+            registerByMonth[monthLabel] =
+                registerByMonth[monthLabel]! + registerCount;
+          }
+        }
+      } else {
+        print(
+            "Error en el endpoint: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
-      print("Error al procesar los registros de eventos: $e");
+      print("Error al procesar los registros por categoría: $e");
     }
-    return eventRegistrationCounts;
+
+    print("Registros por mes: $registerByMonth");
+    return registerByMonth;
   }
 
   List<DatosMes> getData() {
-    // Obtener el ID de la categoría seleccionada
-    String? categoryId = categories.entries
-        .firstWhere((entry) => entry.value == selectCategory,
-            orElse: () => MapEntry('', ''))
-        .key;
-    // Filtrar eventos por el ID de la categoría
+    // Filtra eventos solo por el nombre de la categoría
     List<dynamic> filterData = eventData
-        .where((event) => event['category_id'].toString() == categoryId)
+        .where((event) => event['category_name'] == selectCategory)
         .toList();
     // Mapea los datos filtrados, ignorando los valores inválidos
     return filterData
@@ -266,11 +298,12 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
                         child: Text(entry.value), // Nombre de la categoría
                       );
                     }).toList(),
-                    onChanged: (String? nuevaCategoriaId) {
+                    onChanged: (String? nuevaCategoriaId) async {
                       setState(() {
                         selectCategory = nuevaCategoriaId!;
                       });
-                      findEventsByCategory(selectCategory);
+
+                      await findEventsByCategory(selectCategory);
                     },
                   ),
 
