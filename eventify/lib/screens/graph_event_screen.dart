@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:eventify/provider/event_provider.dart';
+import 'package:eventify/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -15,15 +16,22 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
   @override
   void initState() {
     super.initState();
-    findEvents();
-    findUserData();
-    findCategories();
+    initializeData();
+  }
+
+  Future<void> initializeData() async {
+    await findEvents(); // Asegura que los datos se carguen primero
+    await findUserData();
+    await findCategories();
+    await getEventRegistrationCounts();
+    print("eventos id del organizador después de cargar datos: $eventsOfThisOrganizer");
   }
 
   // Lista de categorías disponibles
   Map<String, String> categories = {};
   List<dynamic> eventData = [];
   List<dynamic> userData = [];
+  List<dynamic> eventsOfThisOrganizer = [];
   bool status = true; // Para mostrar un mensaje, si no hay datos
 
   // Categoria que saldrá por defecto
@@ -33,12 +41,20 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
   Future<void> findEvents() async {
     try {
       var response = await EventProvider.getEventsByOrganizer();
+        print("Respuesta del servidor: ${response.body}");
+        print("Código de estado: ${response.statusCode}"); 
+  
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
 
         setState(() {
           eventData = List<dynamic>.from(data['data']);
-          print("Eventos cargados: $eventData");
+          eventsOfThisOrganizer = eventData.map((event) {
+            return event['id'];
+            }).toList();
+            print("Eventos cargados: $eventData");
+            print("IDs de eventos: $eventsOfThisOrganizer");
+          
         });
       } else {
         throw Exception('Error al cargar los eventos');
@@ -58,12 +74,24 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
 
+        print("Datos de los eventos: ${jsonEncode(data['data'])}");
+
         setState(() {
-          // Filtra los eventos segun la categoria
-          eventData = List<dynamic>.from(data['data']).where((event) {
-            return event['category_id'].toString() == categoryId;
-          }).toList();
-          print("Eventos filtrados para la categoría $categoryId: $eventData");
+          eventData = List<dynamic>.from(data['data']);
+          print("Ave maria: ${eventData}");
+          var eventIds = eventData.where((event) {
+            // Asegúrate de convertir ambos valores a String para la comparación
+            return event['category_name'].toString() == categoryId;
+          }).map((event) => event['id'].toString()).toList();
+
+          // Mapa que relacione el category_name con la id de la categoria
+          // Imprime las IDs de los eventos filtrados para verificar el resultado
+          print("IDs de eventos filtrados para la categoría $categoryId: $eventIds");
+
+          // Si eventIds está vacío, significa que no hubo coincidencias
+          if (eventIds.isEmpty) {
+            print("No se encontraron eventos para la categoría $categoryId.");
+          }
         });
       } else {
         throw Exception('Error al cargar los eventos por categoría');
@@ -111,36 +139,82 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
     }
   }
 
-  // Datos para mostrar en la gráfica
-  List<DatosMes?> getData() {
+
+Future<Map<String, int>> getEventRegistrationCounts() async {
+  // print("esto hace algo: ${eventData}");
+  // Mapa para almacenar los conteos por ID de evento
+  Map<String, int> eventRegistrationCounts = {
+    for (var eventId in eventsOfThisOrganizer) eventId.toString(): 0
+  };
+  print("IDs de eventos ola: $eventsOfThisOrganizer");
+  try {
+    // Obtener la lista de usuarios
+    var response = await UserProvider.getUsers();
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+
+      // Filtrar usuarios con rol 'u'
+      List<dynamic> users = List<dynamic>.from(data['data']);
+      var filteredUsers = users.where((user) => user['role'] == 'u');
+      print(filteredUsers);
+
+      // Iterar sobre cada usuario con rol 'u'
+      for (var user in filteredUsers) {
+        print(user);
+        String userId = user['id'].toString();
+
+        // Obtener eventos del usuario usando el método `getEventsByUser`
+        var userEventsResponse = await EventProvider.getEventsByUserId(userId);
+        
+        if (userEventsResponse.statusCode == 200) {
+          var userEventsData = jsonDecode(userEventsResponse.body);
+          print(userEventsData);
+
+          // IDs de los eventos a los que está registrado el usuario
+          List<String> userEventIds = List<dynamic>.from(userEventsData['data'])
+              .map((event) => event['id'].toString())
+              .toList();
+          print("Lista de eventos del usuario: ${userEventIds}");
+
+          // Comparar con `eventsOfThisOrganizer` y actualizar el mapa
+          for (var eventId in userEventIds) {
+            if (eventRegistrationCounts.containsKey(eventId)) {
+              eventRegistrationCounts[eventId] =
+                  eventRegistrationCounts[eventId]! + 1;
+            }
+          }
+        }
+      }
+    }
+  } catch (e) {
+    print("Error al procesar los registros de eventos: $e");
+  }
+  print("Resultado: ${eventRegistrationCounts}");
+  return eventRegistrationCounts;
+}
+
+  List<DatosMes> getData() {
     // Obtener el ID de la categoría seleccionada
     String? categoryId = categories.entries
         .firstWhere((entry) => entry.value == selectCategory,
             orElse: () => MapEntry('', ''))
         .key;
-
-    // Filtrar eventos por el id de la categoría
+    print("Categoría seleccionada ID: $categoryId");
+    // Filtrar eventos por el ID de la categoría
     List<dynamic> filterData = eventData
         .where((event) => event['category_id'].toString() == categoryId)
         .toList();
 
     print("Eventos filtrados (${selectCategory}): ${jsonEncode(filterData)}");
 
-    if (filterData.isEmpty) return [];
+    // Mapea los datos filtrados, ignorando los valores inválidos
     return filterData
-        .map((event) {
-          // Verifica que las claves 'month' y 'registeredEvents' existan
-          if (event.containsKey('month') &&
-              event.containsKey('registeredEvents')) {
-            return DatosMes(event['month'], event['registeredEvents']);
-          } else {
-            print("Evento sin datos válidos: ${jsonEncode(event)}");
-            return null; // Ignora datos inválidos
-          }
-        })
-        .where((element) => element != null)
+        .where((event) =>
+            event.containsKey('month') && event.containsKey('registeredEvents'))
+        .map((event) => DatosMes(event['month'], event['registeredEvents']))
         .toList();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -169,8 +243,8 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
                 ? Center(child: CircularProgressIndicator())
                 : DropdownButton<String>(
                     value: categories.containsKey(selectCategory)
-                        ? selectCategory
-                        : categories.keys.first,
+                      ? selectCategory
+                      : categories.keys.first,
                     items: categories.entries.map((entry) {
                       return DropdownMenuItem<String>(
                         value: entry.key, // id de la categoría
@@ -183,7 +257,8 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
                       });
 
                       // Actualiza los datos
-                      findEvents();
+                      
+                      findEventsByCategory(selectCategory);
                     },
                   ),
 

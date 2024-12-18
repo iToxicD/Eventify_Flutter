@@ -38,10 +38,9 @@ class EventProvider {
     return response;
   }
 
-  static Future<http.Response> getEventsByUserId($userId) async {
+  static Future<http.Response> getEventsByUserId(userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
-    String? userId = prefs.getString('user_id');
 
     var url = Uri.parse('$baseUrl/eventsByUser?id=$userId');
     var headers = {
