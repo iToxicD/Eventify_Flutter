@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:eventify/provider/event_provider.dart';
 import 'package:eventify/provider/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../widgets/menu.dart';
@@ -41,10 +42,11 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
       }).toList();
       _isLoading = false;
     });
+
   }
 
   // Obtiene los eventos creado por el organizador
-  Future<List<dynamic>> getEventsOfThisOrginizer(String categoryId) async {
+  Future<List<dynamic>> getEventsOfThisOrganizer(String categoryId) async {
     List<dynamic> eventsOfThisOrganizer = [];
 
     var response = await EventProvider.getEventsByOrganizer();
@@ -57,9 +59,10 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
       }).toList();
     }
 
-    // Filtrar eventos de los últimos 4 meses
+    // Calcular el rango entre hace 3 meses y el final del mes actual
     DateTime now = DateTime.now();
-    DateTime fourMonths = now.subtract(Duration(days: 120));
+    DateTime startOfFourMonthsAgo = DateTime(now.year, now.month - 3, 1);
+    DateTime endOfCurrentMonth = DateTime(now.year, now.month + 1, 0);
 
     // Pasar de id de categoria a nombre
     String? categoryName = categories[categoryId];
@@ -68,12 +71,13 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
     List<dynamic> filteredEvents = eventsOfThisOrganizer.where((event) {
       DateTime eventDate = DateTime.parse(event['start_time']);
       return event['category_name'] == categoryName &&
-          eventDate.isAfter(fourMonths) &&
-          eventDate.isBefore(now);
+          eventDate.isAfter(startOfFourMonthsAgo) &&
+          eventDate.isBefore(endOfCurrentMonth);
     }).toList();
 
     return filteredEvents;
   }
+
 
   // Obtiene las categorias
   Future<void> findCategories() async {
@@ -108,21 +112,22 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
   }
 
   Future<Map<String, int>> getGraphData(String categoryId) async {
-    // Mapa para almacenar los conteos de usuarios registrados por mes
+    // Inicializar el mapa con los nombres de los últimos cuatro meses
+    DateTime now = DateTime.now();
     Map<String, int> registerByMonth = {
-      "Mes 1": 0,
-      "Mes 2": 0,
-      "Mes 3": 0,
-      "Mes 4": 0,
+      DateFormat('MMMM').format(DateTime(now.year, now.month - 3)): 0, // Hace 3 meses
+      DateFormat('MMMM').format(DateTime(now.year, now.month - 2)): 0, // Hace 2 meses
+      DateFormat('MMMM').format(DateTime(now.year, now.month - 1)): 0, // Mes anterior
+      DateFormat('MMMM').format(DateTime(now.year, now.month)): 0,     // Mes actual
     };
 
-    // Obtenemos la lista de los eventos del organizador
-    List<dynamic> events = await getEventsOfThisOrginizer(categoryId);
+    // Obtener los eventos del organizador
+    List<dynamic> events = await getEventsOfThisOrganizer(categoryId);
 
-    // Extraemos los IDs de los eventos
+    // Extraer los IDs de los eventos
     List<String> eventIds = events.map((event) => event['id'].toString()).toList();
 
-    // Obtenemos la lista de usuarios
+    // Obtener la lista de usuarios
     var usersResponse = await UserProvider.getUsers();
     if (usersResponse.statusCode == 200) {
       var usersData = jsonDecode(usersResponse.body);
@@ -141,19 +146,10 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
             var event = events.firstWhere((e) => e['id'].toString() == eventId);
             DateTime eventDate = DateTime.parse(event['start_time']);
 
-            // Calcular la diferencia de días entre hoy y la fecha del evento
-            DateTime now = DateTime.now();
-            int daysDifference = now.difference(eventDate).inDays;
-
-            // Actualizar el contador del mes correspondiente
-            if (daysDifference <= 30) {
-              registerByMonth["Mes 4"] = registerByMonth["Mes 4"]! + 1;
-            } else if (daysDifference <= 60) {
-              registerByMonth["Mes 3"] = registerByMonth["Mes 3"]! + 1;
-            } else if (daysDifference <= 90) {
-              registerByMonth["Mes 2"] = registerByMonth["Mes 2"]! + 1;
-            } else if (daysDifference <= 120) {
-              registerByMonth["Mes 1"] = registerByMonth["Mes 1"]! + 1;
+            // Determinar el mes del evento y actualizar el contador
+            String eventMonth = DateFormat('MMMM').format(eventDate);
+            if (registerByMonth.containsKey(eventMonth)) {
+              registerByMonth[eventMonth] = registerByMonth[eventMonth]! + 1;
             }
           }
         }
@@ -162,6 +158,7 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
 
     return registerByMonth;
   }
+
 
 
   @override
@@ -217,6 +214,7 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
                     ),
                     primaryYAxis: NumericAxis(
                       title: AxisTitle(text: 'Registros'),
+                      interval: 1,
                     ),
                     series: <ChartSeries>[
                       ColumnSeries<DatosMes, String>(
@@ -228,7 +226,6 @@ class _GraphEventScreenState extends State<GraphEventScreen> {
                         dataLabelSettings: DataLabelSettings(isVisible: true),
                       ),
                     ],
-                    tooltipBehavior: TooltipBehavior(enable: true),
                   ),
                   if (_isLoading)
                     Container(
